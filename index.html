@@ -615,17 +615,15 @@
         // ============================================================
         function renderFactionTabs() {
             const container = document.getElementById('unitsContainer');
-            // 清空，但保留加载状态
             container.innerHTML = '';
 
-            // 创建选项卡容器
             const tabsDiv = document.createElement('div');
             tabsDiv.className = 'faction-tabs';
 
             const factions = ['盟军', '帝国'];
             const icons = {
                 '盟军': '☭',
-                '帝国': '⚡'
+                '帝国': '🇩🇪'
             };
             const iconClass = {
                 '盟军': 'icon-soviet',
@@ -648,7 +646,6 @@
 
             container.appendChild(tabsDiv);
 
-            // 创建两个阵营内容容器（用于切换）
             const contentWrapper = document.createElement('div');
             contentWrapper.id = 'factionContentWrapper';
             container.appendChild(contentWrapper);
@@ -681,7 +678,6 @@
                 const tagGroup = document.createElement('div');
                 tagGroup.className = 'tag-group';
 
-                // 标签头（可折叠）
                 const label = document.createElement('div');
                 label.className = 'tag-label';
                 label.innerHTML = `${tagLabels[tag]} <span class="arrow">▼</span>`;
@@ -690,11 +686,9 @@
                 });
                 tagGroup.appendChild(label);
 
-                // 内容包裹
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'gift-group-wrapper';
 
-                // 遍历礼物（按价值排序）
                 const giftNames = Object.keys(tagData).sort((a, b) => {
                     return (tagData[a].value || 0) - (tagData[b].value || 0);
                 });
@@ -706,14 +700,13 @@
                     const giftGroup = document.createElement('div');
                     giftGroup.className = 'gift-group';
 
-                    // 礼物头部
                     const header = document.createElement('div');
                     header.className = 'gift-header';
 
                     const icon = document.createElement('img');
                     icon.className = 'gift-icon';
-                    // 使用礼物路径：礼物/礼物名/礼物名.jpg
-                    const giftImagePath = `礼物/${giftName}/${giftName}.jpg`;
+                    // 修改为扁平路径：礼物/礼物名.jpg
+                    const giftImagePath = `礼物/${giftName}.jpg`;
                     icon.src = giftImagePath;
                     icon.alt = giftName;
                     icon.loading = 'lazy';
@@ -734,7 +727,6 @@
                     header.append(icon, nameSpan, valueSpan, countSpan);
                     giftGroup.appendChild(header);
 
-                    // 单位网格
                     const grid = document.createElement('div');
                     grid.className = 'unit-grid';
 
@@ -751,7 +743,6 @@
                 wrapper.appendChild(tagGroup);
             }
 
-            // 默认展开所有tag
             wrapper.querySelectorAll('.tag-group').forEach(g => g.classList.remove('collapsed'));
         }
 
@@ -776,7 +767,6 @@
 
             const meta = document.createElement('div');
             meta.className = 'unit-card-meta';
-            // 只显示价值和出场数量
             const valSpan = document.createElement('span');
             valSpan.textContent = `⚡ ${giftValue || 0}`;
             const cntSpan = document.createElement('span');
@@ -850,7 +840,6 @@
                 nav.style.display = 'none';
             }
 
-            // 元信息（去掉emoji）
             meta.innerHTML = `
                 <span>标签: ${unit.tag || '未分类'}</span>
                 <span>礼物: ${giftName}</span>

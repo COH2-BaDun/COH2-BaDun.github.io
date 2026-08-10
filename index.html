@@ -4,948 +4,540 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>B站巴顿英雄连2弹幕游戏</title>
+    <!-- Font Awesome 图标库 (坦克图标) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ===== 全局重置 & 基础 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            background: #0b0e0a;
-            color: #e0e0e0;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #1a1a1a;
+            color: #e8e8e8;
             min-height: 100vh;
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a1f1a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #5a7a4a;
-            border-radius: 6px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #7a9a6a;
+            padding: 20px;
         }
 
-        /* ===== 顶部标题 ===== */
-        .page-header {
-            background: linear-gradient(135deg, #1a2a1a, #0d1a0d);
-            border-bottom: 3px solid #7a9a5a;
-            padding: 14px 30px;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #242424;
+            border-radius: 24px;
+            padding: 28px 32px 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+            border: 1px solid #3a3a3a;
+        }
+
+        /* ---- 头部 ---- */
+        .header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 20px;
             flex-wrap: wrap;
-            gap: 12px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid #3a3a3a;
+            padding-bottom: 20px;
+            margin-bottom: 28px;
         }
-        .page-header .header-left {
+
+        .header-left {
             display: flex;
             align-items: center;
             gap: 16px;
         }
-        .page-header .header-left .avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            border: 2px solid #7a9a5a;
-            object-fit: cover;
-            background: #1a221a;
-            box-shadow: 0 0 16px rgba(90, 130, 70, 0.3);
-        }
-        .page-header .header-left .title-group h1 {
-            font-size: 2.0rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            color: #f5e6b0;
-            text-shadow: 0 0 20px rgba(122, 154, 90, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
-        }
-        .page-header .header-left .title-group h1 small {
-            font-size: 1rem;
-            color: #b8c8a8;
-            letter-spacing: 2px;
-            margin-left: 10px;
-            font-weight: 400;
-        }
-        .page-header .sub-tag {
-            font-size: 0.85rem;
-            color: #9aaa8a;
-            letter-spacing: 3px;
-            margin-top: 2px;
-        }
-        @media (max-width: 900px) {
-            .page-header .header-left .title-group h1 {
-                font-size: 1.4rem;
-            }
-            .page-header .header-left .title-group h1 small {
-                font-size: 0.8rem;
-                display: block;
-                margin-left: 0;
-            }
-            .page-header .header-left .avatar {
-                width: 40px;
-                height: 40px;
-            }
-        }
-        @media (max-width: 520px) {
-            .page-header {
-                padding: 10px 14px;
-            }
-            .page-header .header-left .title-group h1 {
-                font-size: 1.1rem;
-                letter-spacing: 2px;
-            }
+
+        .header-icon {
+            font-size: 42px;
+            color: #d4a84b;
         }
 
-        /* ===== 直播间区域 ===== */
-        .live-section {
-            background: #0f130e;
-            padding: 20px 30px;
-            border-bottom: 2px solid #3a4a3a;
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #d4a84b;
+            background: #2a2a2a;
         }
-        .live-section .live-wrapper {
-            max-width: 1100px;
-            margin: 0 auto;
-            position: relative;
-            background: #0a0c0a;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #3a5a3a;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #f5d98f, #d4a84b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .live-section .live-wrapper .live-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 18px;
-            background: #1a221a;
-            border-bottom: 1px solid #2a3a2a;
+
+        .header-sub {
+            margin-left: auto;
+            font-size: 16px;
+            background: #2e2e2e;
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid #4a4a4a;
+            transition: 0.2s;
         }
-        .live-section .live-wrapper .live-header .live-title {
-            font-size: 1rem;
-            color: #c8d8b8;
-            font-weight: 600;
-        }
-        .live-section .live-wrapper .live-header .live-title i {
-            color: #ff6b6b;
-            margin-right: 8px;
-            display: inline-block;
-            animation: pulse-dot 1.2s infinite;
-        }
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
-        }
-        .live-section .live-wrapper .live-header .goto-btn {
-            background: #4a6a3a;
-            color: #f5f0e0;
-            border: none;
-            padding: 6px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.25s;
+
+        .header-sub a {
+            color: #7fc1ff;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-weight: 500;
         }
-        .live-section .live-wrapper .live-header .goto-btn:hover {
-            background: #6a8a5a;
-            transform: scale(1.04);
-            box-shadow: 0 0 20px rgba(90, 130, 70, 0.4);
+
+        .header-sub a:hover {
+            color: #a8d4ff;
+            text-decoration: underline;
         }
-        .live-section .live-wrapper .live-iframe {
+
+        /* ---- 直播间播放窗口 ---- */
+        .live-section {
+            margin-bottom: 40px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0f0f0f;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            transition: 0.25s;
+            border: 1px solid #333;
+        }
+
+        .live-section:hover {
+            border-color: #d4a84b;
+        }
+
+        .live-iframe {
             width: 100%;
-            height: 380px;
+            height: 420px;
             border: none;
             display: block;
-            background: #0a0c0a;
-        }
-        .live-section .live-wrapper .live-iframe iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .live-section .live-wrapper .live-fallback {
-            display: none;
-            padding: 60px 20px;
-            text-align: center;
-            color: #8a9a7a;
-            background: #0d120d;
-        }
-        .live-section .live-wrapper .live-fallback a {
-            color: #b8d8a0;
-            font-size: 1.2rem;
-            text-decoration: none;
-            border: 1px solid #4a6a3a;
-            padding: 10px 32px;
-            border-radius: 30px;
-            display: inline-block;
-            transition: 0.3s;
-        }
-        .live-section .live-wrapper .live-fallback a:hover {
-            background: #2a3a2a;
-            border-color: #7a9a5a;
         }
 
-        /* ===== 单位展示区 ===== */
+        /* ---- 单位展示区 ---- */
         .units-section {
-            padding: 24px 30px 40px;
-            max-width: 1440px;
-            margin: 0 auto;
+            margin-top: 10px;
         }
-        .controls {
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            padding-left: 6px;
+            border-left: 5px solid #d4a84b;
+            padding-left: 16px;
+        }
+
+        .faction-tabs {
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 16px 24px;
+            gap: 12px;
             margin-bottom: 28px;
-            padding: 16px 24px;
-            background: #141a14;
-            border-radius: 12px;
-            border: 1px solid #2a3a2a;
-        }
-        .controls .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
             flex-wrap: wrap;
         }
-        .controls .control-group .label {
-            font-size: 0.85rem;
-            color: #9aaa8a;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin-right: 4px;
-        }
-        .controls .btn {
-            background: #1f2a1f;
-            color: #b8c8a8;
-            border: 1px solid #3a4a3a;
-            padding: 6px 18px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-        .controls .btn:hover {
-            background: #2a3a2a;
-            border-color: #5a7a4a;
-            color: #f0f0e0;
-        }
-        .controls .btn.active {
-            background: #3a6a2a;
-            border-color: #6a9a4a;
-            color: #fff;
-            box-shadow: 0 0 16px rgba(60, 130, 40, 0.3);
-        }
-        .controls .btn-faction {
-            min-width: 80px;
-        }
-        .controls .btn-tag {
-            min-width: 60px;
-        }
-        .controls .stats {
-            margin-left: auto;
-            font-size: 0.85rem;
-            color: #8a9a7a;
-            background: #0d120d;
-            padding: 4px 16px;
-            border-radius: 30px;
-            border: 1px solid #2a3a2a;
-        }
-        .controls .stats span {
-            color: #d8e8c8;
-            font-weight: 700;
-        }
 
-        /* ===== 礼物分组 ===== */
-        .gift-group {
-            margin-bottom: 32px;
-            background: #121812;
-            border-radius: 14px;
-            border: 1px solid #2a3a2a;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-        .gift-group .gift-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 22px;
-            background: #1a221a;
-            border-bottom: 1px solid #2a3a2a;
+        .faction-tab {
+            padding: 10px 28px;
+            border-radius: 40px;
+            background: #2e2e2e;
+            border: 1px solid #444;
+            color: #ccc;
+            font-weight: 600;
+            font-size: 18px;
             cursor: pointer;
-            user-select: none;
             transition: 0.2s;
-            flex-wrap: wrap;
-        }
-        .gift-group .gift-header:hover {
-            background: #1f2a1f;
-        }
-        .gift-group .gift-header .gift-icon {
-            font-size: 1.6rem;
-            line-height: 1;
-        }
-        .gift-group .gift-header .gift-name {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #f5e6b0;
-        }
-        .gift-group .gift-header .gift-battery {
-            font-size: 0.9rem;
-            color: #b8c8a8;
-            background: #2a3a2a;
-            padding: 2px 14px;
-            border-radius: 30px;
-            font-weight: 600;
-        }
-        .gift-group .gift-header .gift-battery i {
-            color: #ffd700;
-            margin-right: 4px;
-        }
-        .gift-group .gift-header .gift-count {
-            font-size: 0.85rem;
-            color: #8a9a7a;
-            margin-left: auto;
-        }
-        .gift-group .gift-header .gift-arrow {
-            color: #5a7a4a;
-            font-size: 1.2rem;
-            transition: 0.3s;
-        }
-        .gift-group .gift-header .gift-arrow.open {
-            transform: rotate(180deg);
-        }
-        .gift-group .gift-body {
-            padding: 18px 22px 22px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 18px;
-        }
-        .gift-group .gift-body.collapsed {
-            display: none;
+            user-select: none;
         }
 
-        /* ===== 单位卡片 ===== */
-        .unit-card {
-            background: #1a201a;
-            border-radius: 12px;
-            border: 1px solid #2a3a2a;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
+        .faction-tab:hover {
+            background: #3a3a3a;
+            border-color: #666;
         }
-        .unit-card:hover {
-            transform: translateY(-4px);
-            border-color: #5a7a4a;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+
+        .faction-tab.active {
+            background: #d4a84b;
+            color: #1a1a1a;
+            border-color: #d4a84b;
+            box-shadow: 0 4px 14px rgba(212, 168, 75, 0.3);
         }
-        .unit-card .card-img {
-            width: 100%;
-            aspect-ratio: 16/10;
-            background: #0d120d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
+
+        .faction-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
         }
-        .unit-card .card-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: 0.4s;
+
+        .faction-content.active {
+            display: block;
         }
-        .unit-card .card-img img.load-error {
-            object-fit: contain;
-            padding: 12px;
-            opacity: 0.6;
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0.4;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .unit-card .card-img .img-placeholder {
-            color: #4a5a4a;
-            font-size: 0.85rem;
-            text-align: center;
-            padding: 10px;
+
+        .category-block {
+            margin-bottom: 36px;
         }
-        .unit-card .card-body {
-            padding: 12px 14px 14px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .unit-card .card-body .unit-name {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #e8ecd8;
-            margin-bottom: 4px;
-        }
-        .unit-card .card-body .unit-sub {
-            font-size: 0.75rem;
-            color: #7a8a6a;
-            margin-bottom: 6px;
+
+        .category-label {
+            font-size: 20px;
+            font-weight: 600;
+            color: #d4a84b;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #444;
             display: flex;
             align-items: center;
             gap: 10px;
-            flex-wrap: wrap;
         }
-        .unit-card .card-body .unit-sub .tag {
-            background: #2a3a2a;
-            padding: 1px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            color: #b8c8a8;
+
+        .category-label i {
+            font-size: 20px;
+            color: #aaa;
         }
-        .unit-card .card-body .unit-desc {
-            font-size: 0.82rem;
-            color: #b8c8a8;
-            line-height: 1.5;
+
+        .unit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .unit-card {
+            background: #1e1e1e;
+            border-radius: 16px;
+            padding: 14px 14px 18px;
+            border: 1px solid #333;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: default;
+        }
+
+        .unit-card:hover {
+            border-color: #d4a84b;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .unit-media {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #111;
+            margin-bottom: 10px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .unit-media.video {
+            background: #0a0a0a;
+        }
+
+        .unit-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #f0f0f0;
+        }
+
+        .unit-desc {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.4;
             margin: 6px 0 10px;
             flex: 1;
         }
-        .unit-card .card-body .card-actions {
-            display: flex;
-            gap: 8px;
+
+        .unit-gift {
+            font-size: 12px;
+            background: #2a2a2a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: #d4a84b;
+            border: 1px solid #3a3a3a;
+            display: inline-block;
             margin-top: 4px;
         }
-        .unit-card .card-body .card-actions .btn-video {
-            background: #2a3a2a;
-            color: #c8d8b8;
-            border: none;
-            padding: 4px 14px;
-            border-radius: 16px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-family: inherit;
-        }
-        .unit-card .card-body .card-actions .btn-video:hover {
-            background: #4a6a3a;
-            color: #fff;
-        }
-        .unit-card .card-body .card-actions .btn-video i {
-            font-size: 0.9rem;
-        }
 
-        /* ===== 视频模态框 ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.88);
-            z-index: 999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(4px);
-        }
-        .modal-overlay.open {
-            display: flex;
-        }
-        .modal-overlay .modal-box {
-            background: #141a14;
-            border-radius: 16px;
-            max-width: 860px;
-            width: 100%;
-            border: 1px solid #4a6a3a;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-            animation: modalIn 0.3s ease;
-        }
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.92) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .modal-overlay .modal-box .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 22px;
-            background: #1a221a;
-            border-bottom: 1px solid #2a3a2a;
-        }
-        .modal-overlay .modal-box .modal-header .modal-title {
-            font-weight: 700;
-            color: #f5e6b0;
-            font-size: 1.1rem;
-        }
-        .modal-overlay .modal-box .modal-header .modal-close {
-            background: none;
-            border: none;
-            color: #8a9a7a;
-            font-size: 1.8rem;
-            cursor: pointer;
-            line-height: 1;
-            transition: 0.2s;
-            padding: 0 6px;
-        }
-        .modal-overlay .modal-box .modal-header .modal-close:hover {
-            color: #ff6b6b;
-            transform: rotate(90deg);
-        }
-        .modal-overlay .modal-box .modal-body {
-            padding: 0;
-        }
-        .modal-overlay .modal-box .modal-body video {
-            width: 100%;
-            display: block;
-            background: #0a0c0a;
-            max-height: 70vh;
-        }
-
-        /* ===== 无结果 ===== */
-        .no-result {
+        .empty-tip {
+            color: #666;
             text-align: center;
-            padding: 50px 20px;
-            color: #5a6a5a;
-            font-size: 1.1rem;
-        }
-        .no-result i {
-            font-size: 2.4rem;
-            display: block;
-            margin-bottom: 12px;
-            opacity: 0.5;
+            padding: 40px 0;
+            font-size: 16px;
         }
 
-        /* ===== 响应式 ===== */
-        @media (max-width: 900px) {
-            .live-section .live-wrapper .live-iframe {
-                height: 280px;
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
             }
-            .controls {
+            .header {
                 flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
+                align-items: flex-start;
             }
-            .controls .control-group {
-                justify-content: center;
-            }
-            .controls .stats {
+            .header-sub {
                 margin-left: 0;
+                width: 100%;
                 text-align: center;
             }
-            .gift-group .gift-body {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 12px;
-                padding: 14px 16px 18px;
+            .header-title {
+                font-size: 20px;
+            }
+            .live-iframe {
+                height: 260px;
+            }
+            .unit-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 14px;
+            }
+            .faction-tab {
+                padding: 8px 18px;
+                font-size: 15px;
             }
         }
-        @media (max-width: 520px) {
-            .live-section {
-                padding: 12px 14px;
+
+        @media (max-width: 480px) {
+            .header-icon {
+                font-size: 30px;
             }
-            .live-section .live-wrapper .live-iframe {
-                height: 200px;
+            .avatar {
+                width: 48px;
+                height: 48px;
             }
-            .units-section {
-                padding: 16px 14px 30px;
-            }
-            .controls .btn {
-                font-size: 0.75rem;
-                padding: 4px 12px;
-            }
-            .gift-group .gift-header {
-                padding: 10px 14px;
-                gap: 6px;
-            }
-            .gift-group .gift-header .gift-name {
-                font-size: 1rem;
-            }
-            .gift-group .gift-body {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                padding: 12px 12px 16px;
-            }
-            .unit-card .card-img {
-                aspect-ratio: 16/12;
+            .unit-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             }
         }
-        .hidden { display: none !important; }
-        .text-gold { color: #f5e6b0; }
-        .text-muted { color: #7a8a6a; }
     </style>
 </head>
 <body>
+    <div class="container">
 
-    <!-- ===== 顶部标题（含头像） ===== -->
-    <header class="page-header">
-        <div class="header-left">
-            <img src="头像.jpg" alt="头像" class="avatar" />
-            <div class="title-group">
-                <h1>
-                    🎖️ B站巴顿英雄连2弹幕游戏
-                    <small>｜COH2 弹幕互动</small>
-                </h1>
-                <div class="sub-tag">⚔️ 盟军 · 帝国 ｜ 步兵 · 装甲 · 远程 ｜ 礼物召唤单位</div>
+        <!-- ===== 头部 ===== -->
+        <header class="header">
+            <div class="header-left">
+                <i class="fas fa-tank header-icon"></i>
+                <img src="头像.jpg" alt="头像" class="avatar" />
+                <span class="header-title">B站巴顿英雄连2弹幕游戏</span>
             </div>
-        </div>
-    </header>
-
-    <!-- ===== 直播间 ===== -->
-    <section class="live-section">
-        <div class="live-wrapper">
-            <div class="live-header">
-                <div class="live-title">
-                    <i>●</i> 正在直播 · 巴顿英雄连2弹幕游戏
-                </div>
-                <a class="goto-btn" href="https://live.bilibili.com/1987060053" target="_blank">
-                    ▶ 前往直播间
+            <div class="header-sub">
+                <a href="https://live.bilibili.com/1987060053" target="_blank">
+                    <i class="fas fa-external-link-alt" style="margin-right:6px;"></i>
+                    https://live.bilibili.com/1987060053
                 </a>
             </div>
-            <div class="live-iframe" id="liveIframeContainer">
-                <iframe
-                src="https://live.bilibili.com/1987060053"
+        </header>
+
+        <!-- ===== 直播间播放窗口 ===== -->
+        <section class="live-section">
+            <iframe
+                class="live-iframe"
+                src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=1987060053"
                 allowfullscreen
                 loading="lazy"
                 title="B站直播间"
-                ></iframe>
-            </div>
-            <div class="live-fallback" id="liveFallback">
-                <p style="margin-bottom:16px;">⚠️ 若直播无法加载，请点击下方按钮直接跳转</p>
-                <a href="https://live.bilibili.com/1987060053" target="_blank">🔴 前往 B站直播间</a>
-            </div>
-        </div>
-    </section>
+            ></iframe>
+        </section>
 
-    <!-- ===== 单位展示区 ===== -->
-    <section class="units-section" id="app">
-        <div class="controls">
-            <div class="control-group">
-                <span class="label">⚔️ 阵营</span>
-                <button class="btn btn-faction active" data-faction="all">全部</button>
-                <button class="btn btn-faction" data-faction="盟军">盟军</button>
-                <button class="btn btn-faction" data-faction="帝国">帝国</button>
-            </div>
-            <div class="control-group">
-                <span class="label">🏷️ 标签</span>
-                <button class="btn btn-tag active" data-tag="all">全部</button>
-                <button class="btn btn-tag" data-tag="步兵">步兵</button>
-                <button class="btn btn-tag" data-tag="装甲">装甲</button>
-                <button class="btn btn-tag" data-tag="远程">远程</button>
-            </div>
-            <div class="stats">
-                单位 <span id="unitCount">0</span> 个
-            </div>
-        </div>
-        <div id="unitList"></div>
-    </section>
+        <!-- ===== 单位展示 ===== -->
+        <section class="units-section">
+            <h2 class="section-title"><i class="fas fa-swords" style="margin-right:12px;"></i>作战单位图鉴</h2>
 
-    <!-- ===== 视频模态框 ===== -->
-    <div class="modal-overlay" id="videoModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <span class="modal-title" id="modalVideoTitle">🎬 单位演示</span>
-                <button class="modal-close" id="modalCloseBtn">✕</button>
+            <div class="faction-tabs" id="factionTabs">
+                <span class="faction-tab active" data-faction="allies">盟军</span>
+                <span class="faction-tab" data-faction="axis">帝国</span>
             </div>
-            <div class="modal-body">
-                <video id="modalVideo" controls autoplay muted>
-                    <source src="" type="video/mp4" />
-                    您的浏览器不支持视频播放。
-                </video>
-            </div>
-        </div>
+
+            <div class="faction-content active" id="contentAllies"></div>
+            <div class="faction-content" id="contentAxis"></div>
+        </section>
     </div>
 
     <script>
-        // ================================================================
-        //  全局变量（由数据文件填充）
-        // ================================================================
-        let allUnits = [];
-        let giftConfig = {};
-        let currentFaction = 'all';
-        let currentTag = 'all';
+        // ============================================================
+        //  数据加载 & 渲染
+        // ============================================================
+        let unitData = null;
 
-        const container = document.getElementById('unitList');
-        const unitCountEl = document.getElementById('unitCount');
+        // 礼物 → 单位数量映射 (用于展示)
+        const GIFT_MAP = {
+            '小花花': 1, '你真好看': 10, '棒棒糖': 50, '千纸鹤': 52,
+            '喜欢你': 99, '做我的小猫': 99, '音乐盒': 99, '钻石戒指': 199,
+            '花式夸夸': 299, '灿烂烟花': 520, '急速超跑': 1000,
+            '人气票': 1, '比心': 10, '心动时刻': 50, '情书': 52,
+            '捏捏小脸': 99, '水晶鞋': 99, '撒花': 99, '告白花束': 199,
+            '流星雨': 299, '旋转木马': 520, '私人飞机': 1000
+        };
 
-        // ================================================================
-        //  工具函数（依赖外部数据）
-        // ================================================================
-        function getImagePath(faction, unitName) {
-            // 航空编队使用 .jpg，其余使用 .png
-            const ext = (unitName === '航空编队') ? 'jpg' : 'png';
-            return faction + '/' + unitName + '.' + ext;
+        // 单位名称 → 对应礼物 (按阵营)
+        const UNIT_GIFT = {
+            '冲锋兵': { allies: '小花花', axis: '人气票' },
+            '冲锋兵2': { allies: '小花花', axis: '人气票' },
+            '冲锋兵3': { allies: '小花花', axis: '人气票' },
+            '火箭筒兵': { allies: '小花花', axis: '人气票' },
+            '机枪兵': { allies: '小花花', axis: '人气票' },
+            '机枪兵2': { allies: '小花花', axis: '人气票' },
+            '机枪兵3': { allies: '小花花', axis: '人气票' },
+            '狙击兵': { allies: '小花花', axis: '人气票' },
+            '狙击兵2': { allies: '小花花', axis: '人气票' },
+            '喷火兵': { allies: '小花花', axis: '人气票' },
+            '手枪军官': { allies: '小花花', axis: '人气票' },
+            '掷弹筒兵': { allies: '小花花', axis: '人气票' },
+            '重机枪兵': { allies: '小花花', axis: '人气票' },
+            '步战车': { allies: '你真好看', axis: '比心' },
+            '装甲车': { allies: '你真好看', axis: '比心' },
+            '轻型坦克': { allies: '棒棒糖', axis: '心动时刻' },
+            '喷火坦克': { allies: '棒棒糖', axis: '心动时刻' },
+            '中型坦克': { allies: '千纸鹤', axis: '情书' },
+            '重型坦克': { allies: '千纸鹤', axis: '情书' },
+            '超级坦克': { allies: '喜欢你', axis: '捏捏小脸' },
+            '管风琴': { allies: '做我的小猫', axis: '水晶鞋' },
+            '喀秋莎': { allies: '音乐盒', axis: '撒花' },
+            '斯图卡': { allies: '钻石戒指', axis: '告白花束' },
+            '灰熊': { allies: '花式夸夸', axis: '流星雨' },
+            '榴弹炮': { allies: '灿烂烟花', axis: '旋转木马' },
+            '航空编队': { allies: '急速超跑', axis: '私人飞机' }
+        };
+
+        function getGiftForUnit(unitName, faction) {
+            const map = UNIT_GIFT[unitName];
+            if (!map) return '—';
+            return faction === 'allies' ? map.allies : map.axis;
         }
 
-        function getVideoPath() {
-            return '视频/测试.mp4';
+        function getGiftBattery(giftName) {
+            return GIFT_MAP[giftName] || '?';
         }
 
-        function getGiftInfo(faction, category) {
-            return giftConfig[faction]?.[category] || null;
-        }
-
-        // ================================================================
-        //  渲染引擎
-        // ================================================================
-        function filterUnits(units, faction, tag) {
-            return units.filter(u => {
-                if (faction !== 'all' && u.faction !== faction) return false;
-                if (tag !== 'all' && u.tag !== tag) return false;
-                return true;
-            });
-        }
-
-        function groupByGift(units) {
-            const groups = {};
-            for (const u of units) {
-                const key = u.faction + '|' + u.category;
-                if (!groups[key]) {
-                    groups[key] = {
-                        faction: u.faction,
-                        category: u.category,
-                        gift: getGiftInfo(u.faction, u.category),
-                        units: []
-                    };
-                }
-                groups[key].units.push(u);
-            }
-            return Object.values(groups);
-        }
-
-        function render() {
-            const filtered = filterUnits(allUnits, currentFaction, currentTag);
-            const grouped = groupByGift(filtered);
-
-            if (grouped.length === 0) {
-                container.innerHTML = `
-                    <div class="no-result">
-                        <i>🔍</i>
-                        没有找到匹配的单位<br>
-                        <span class="text-muted" style="font-size:0.9rem;">尝试调整筛选条件</span>
-                    </div>
-                `;
-                unitCountEl.textContent = '0';
+        function renderFaction(factionKey, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const faction = unitData[factionKey];
+            if (!faction) {
+                container.innerHTML = '<div class="empty-tip">暂无数据</div>';
                 return;
             }
 
+            const categories = ['步兵', '装甲', '远程'];
             let html = '';
-            let totalUnits = 0;
 
-            grouped.sort((a, b) => {
-                if (a.faction === b.faction) return a.category.localeCompare(b.category);
-                return a.faction === '盟军' ? -1 : 1;
-            });
+            categories.forEach(cat => {
+                const items = faction[cat] || [];
+                if (items.length === 0) return;
 
-            const iconMap = {
-                '步兵': '🔫',
-                '装甲车': '🚗',
-                '步兵杀手': '💥',
-                '坦克': '🔧',
-                '超级坦克': '⭐',
-                '管风琴': '🎵',
-                '喀秋莎': '🚀',
-                '斯图卡': '✈️',
-                '灰熊': '🐻',
-                '榴弹炮': '💣',
-                '航空编队': '🛩️',
-            };
+                let icon = 'fa-user';
+                if (cat === '装甲') icon = 'fa-shield-alt';
+                else if (cat === '远程') icon = 'fa-rocket';
 
-            for (const group of grouped) {
-                const { faction, category, gift, units } = group;
-                totalUnits += units.length;
+                html += `<div class="category-block">
+                    <div class="category-label"><i class="fas ${icon}"></i> ${cat}</div>
+                    <div class="unit-grid">`;
 
-                const giftLabel = gift ? `${gift.label} ${gift.battery}电池 ${gift.count}` : category;
-                const icon = iconMap[category] || '🎯';
+                items.forEach(unit => {
+                    const name = unit.name;
+                    const desc = unit.desc || '—';
+                    const imgPath = unit.image || '';
+                    const videoPath = '视频/测试.mp4';
+                    const hasImage = imgPath && imgPath.length > 0;
+                    const giftName = getGiftForUnit(name, factionKey);
+                    const battery = getGiftBattery(giftName);
 
-                html += `
-                    <div class="gift-group" data-faction="${faction}" data-category="${category}">
-                        <div class="gift-header" onclick="toggleGift(this)">
-                            <span class="gift-icon">${icon}</span>
-                            <span class="gift-name">${faction} · ${category}</span>
-                            <span class="gift-battery">⚡ ${gift ? gift.label : ''} ${gift ? gift.battery : ''}电池</span>
-                            <span class="gift-count">${units.length} 个单位</span>
-                            <span class="gift-arrow open">▼</span>
-                        </div>
-                        <div class="gift-body" id="giftBody-${faction}-${category}">
-                `;
-
-                for (const u of units) {
-                    const imgPath = getImagePath(u.faction, u.unitName);
                     html += `
-                        <div class="unit-card" data-unit="${u.unitName}">
-                            <div class="card-img">
-                                <img src="${imgPath}" alt="${u.unitName}" loading="lazy"
-                                     onerror="this.onerror=null; this.classList.add('load-error'); this.parentElement.querySelector('.img-placeholder').style.display='block';">
-                                <div class="img-placeholder" style="display:none;">🖼️ ${u.unitName}</div>
-                            </div>
-                            <div class="card-body">
-                                <div class="unit-name">${u.unitName}</div>
-                                <div class="unit-sub">
-                                    <span class="tag">${u.tag}</span>
-                                    <span>${u.faction}</span>
-                                    ${gift ? `<span style="color:#b8a87a;">${gift.label} ${gift.battery}⚡</span>` : ''}
-                                </div>
-                                <div class="unit-desc">${u.intro}</div>
-                                <div class="card-actions">
-                                    <button class="btn-video" onclick="playVideo('${u.unitName}')">
-                                        ▶ 演示视频
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="unit-card">
+                            ${hasImage ? 
+                                `<img src="${imgPath}" alt="${name}" class="unit-media" loading="lazy" />` :
+                                `<video src="${videoPath}" class="unit-media video" muted loop playsinline preload="metadata"></video>`
+                            }
+                            <div class="unit-name">${name}</div>
+                            <div class="unit-desc">${desc}</div>
+                            <span class="unit-gift"><i class="fas fa-gift" style="margin-right:4px;"></i>${giftName} ${battery}电池</span>
                         </div>
                     `;
-                }
+                });
 
-                html += `
-                        </div>
-                    </div>
-                `;
+                html += `</div></div>`;
+            });
+
+            if (html === '') {
+                html = '<div class="empty-tip">该阵营暂无单位</div>';
             }
-
             container.innerHTML = html;
-            unitCountEl.textContent = totalUnits;
-        }
 
-        // ================================================================
-        //  交互控制
-        // ================================================================
-        window.toggleGift = function(header) {
-            const body = header.nextElementSibling;
-            const arrow = header.querySelector('.gift-arrow');
-            if (body) {
-                body.classList.toggle('collapsed');
-                if (arrow) arrow.classList.toggle('open');
-            }
-        };
-
-        window.playVideo = function(unitName) {
-            const modal = document.getElementById('videoModal');
-            const video = document.getElementById('modalVideo');
-            const title = document.getElementById('modalVideoTitle');
-            title.textContent = `🎬 ${unitName} · 单位演示`;
-            video.src = getVideoPath();
-            video.load();
-            modal.classList.add('open');
-            video.play().catch(() => {});
-        };
-
-        // 模态框关闭
-        document.getElementById('modalCloseBtn').addEventListener('click', function() {
-            const modal = document.getElementById('videoModal');
-            const video = document.getElementById('modalVideo');
-            modal.classList.remove('open');
-            video.pause();
-            video.src = '';
-        });
-        document.getElementById('videoModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                const video = document.getElementById('modalVideo');
-                this.classList.remove('open');
-                video.pause();
-                video.src = '';
-            }
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('videoModal');
-                if (modal.classList.contains('open')) {
-                    const video = document.getElementById('modalVideo');
-                    modal.classList.remove('open');
-                    video.pause();
-                    video.src = '';
-                }
-            }
-        });
-
-        // 绑定筛选按钮
-        function bindControls() {
-            document.querySelectorAll('.btn-faction').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.btn-faction').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentFaction = this.dataset.faction;
-                    render();
-                });
-            });
-            document.querySelectorAll('.btn-tag').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.btn-tag').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentTag = this.dataset.tag;
-                    render();
+            container.querySelectorAll('video').forEach(vid => {
+                vid.addEventListener('mouseenter', () => { vid.play().catch(() => {}); });
+                vid.addEventListener('mouseleave', () => { vid.pause(); });
+                vid.addEventListener('click', () => {
+                    if (vid.paused) vid.play().catch(() => {});
+                    else vid.pause();
                 });
             });
         }
 
-        // ================================================================
-        //  加载数据文件并启动
-        // ================================================================
-        async function loadData() {
-            try {
-                const response = await fetch('data.json');
-                if (!response.ok) throw new Error('无法加载 data.json');
-                const data = await response.json();
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.faction-tab');
+            const contents = {
+                allies: document.getElementById('contentAllies'),
+                axis: document.getElementById('contentAxis')
+            };
 
-                // 验证数据结构
-                if (!data.units || !data.giftConfig) {
-                    throw new Error('data.json 缺少 units 或 giftConfig 字段');
-                }
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
 
-                // 填充全局变量
-                allUnits = data.units;
-                giftConfig = data.giftConfig;
+                    const faction = this.dataset.faction;
+                    Object.keys(contents).forEach(key => {
+                        contents[key].classList.toggle('active', key === faction);
+                    });
 
-                // 绑定控制事件
-                bindControls();
-
-                // 初次渲染
-                render();
-
-                // 直播间降级检测
-                checkLiveIframe();
-
-                console.log('✅ 数据加载成功，单位数:', allUnits.length);
-            } catch (err) {
-                console.error('❌ 加载数据失败:', err);
-                container.innerHTML = `
-                    <div class="no-result" style="color:#ff6b6b;">
-                        <i>⚠️</i>
-                        数据加载失败，请检查 data.json 文件是否存在且格式正确。<br>
-                        <span class="text-muted">${err.message}</span>
-                    </div>
-                `;
-            }
+                    if (unitData) {
+                        renderFaction('allies', 'contentAllies');
+                        renderFaction('axis', 'contentAxis');
+                        Object.keys(contents).forEach(key => {
+                            contents[key].classList.toggle('active', key === faction);
+                        });
+                    }
+                });
+            });
         }
 
-        // 直播间 iframe 降级
-        function checkLiveIframe() {
-            const container = document.getElementById('liveIframeContainer');
-            const fallback = document.getElementById('liveFallback');
-            setTimeout(() => {
-                const iframe = container.querySelector('iframe');
-                if (iframe) {
-                    let loaded = false;
-                    iframe.onload = function() { loaded = true; };
-                    setTimeout(() => {
-                        if (!loaded) {
-                            container.style.display = 'none';
-                            fallback.style.display = 'block';
-                        }
-                    }, 3000);
-                }
-            }, 2000);
+        function loadData() {
+            fetch('data.json')
+                .then(res => {
+                    if (!res.ok) throw new Error('无法加载 data.json');
+                    return res.json();
+                })
+                .then(data => {
+                    unitData = data;
+                    renderFaction('allies', 'contentAllies');
+                    renderFaction('axis', 'contentAxis');
+                    const activeTab = document.querySelector('.faction-tab.active');
+                    if (activeTab) {
+                        const faction = activeTab.dataset.faction;
+                        document.getElementById('contentAllies').classList.toggle('active', faction === 'allies');
+                        document.getElementById('contentAxis').classList.toggle('active', faction === 'axis');
+                    }
+                })
+                .catch(err => {
+                    console.error('加载 data.json 失败:', err);
+                    document.getElementById('contentAllies').innerHTML =
+                        '<div class="empty-tip">⚠️ 数据加载失败，请确保 data.json 存在于当前目录</div>';
+                    document.getElementById('contentAxis').innerHTML =
+                        '<div class="empty-tip">⚠️ 数据加载失败</div>';
+                });
         }
 
-        // 启动
-        loadData();
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTabs();
+            loadData();
+        });
     </script>
-
 </body>
 </html>

@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>B站巴顿英雄连2弹幕游戏</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #0b0e0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* ===== 滚动条美化 ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1f1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5a7a4a;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7a9a6a;
+        }
+
+        /* ===== 顶部标题 ===== */
+        .page-header {
+            background: linear-gradient(135deg, #1a2a1a, #0d1a0d);
+            border-bottom: 3px solid #7a9a5a;
+            padding: 18px 30px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: #f5e6b0;
+            text-shadow: 0 0 20px rgba(122, 154, 90, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        .page-header h1 small {
+            font-size: 1rem;
+            color: #b8c8a8;
+            letter-spacing: 2px;
+            margin-left: 12px;
+            font-weight: 400;
+        }
+        .page-header .sub-tag {
+            font-size: 0.85rem;
+            color: #9aaa8a;
+            letter-spacing: 4px;
+            margin-top: 4px;
+        }
+
+        /* ===== 直播间区域 ===== */
+        .live-section {
+            background: #0f130e;
+            padding: 20px 30px;
+            border-bottom: 2px solid #3a4a3a;
+        }
+        .live-section .live-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            background: #0a0c0a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #3a5a3a;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+        }
+        .live-section .live-wrapper .live-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            background: #1a221a;
+            border-bottom: 1px solid #2a3a2a;
+        }
+        .live-section .live-wrapper .live-header .live-title {
+            font-size: 1rem;
+            color: #c8d8b8;
+            font-weight: 600;
+        }
+        .live-section .live-wrapper .live-header .live-title i {
+            color: #ff6b6b;
+            margin-right: 8px;
+            display: inline-block;
+            animation: pulse-dot 1.2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+        }
+        .live-section .live-wrapper .live-header .goto-btn {
+            background: #4a6a3a;
+            color: #f5f0e0;
+            border: none;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-section .live-wrapper .live-header .goto-btn:hover {
+            background: #6a8a5a;
+            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(90, 130, 70, 0.4);
+        }
+        .live-section .live-wrapper .live-iframe {
+            width: 100%;
+            height: 380px;
+            border: none;
+            display: block;
+            background: #0a0c0a;
+        }
+        .live-section .live-wrapper .live-iframe iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .live-section .live-wrapper .live-fallback {
+            display: none;
+            padding: 60px 20px;
+            text-align: center;
+            color: #8a9a7a;
+            background: #0d120d;
+        }
+        .live-section .live-wrapper .live-fallback a {
+            color: #b8d8a0;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border: 1px solid #4a6a3a;
+            padding: 10px 32px;
+            border-radius: 30px;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .live-section .live-wrapper .live-fallback a:hover {
+            background: #2a3a2a;
+            border-color: #7a9a5a;
+        }
+
+        /* ===== 单位展示区 ===== */
+        .units-section {
+            padding: 24px 30px 40px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* 控制栏 */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px 24px;
+            margin-bottom: 28px;
+            padding: 16px 24px;
+            background: #141a14;
+            border-radius: 12px;
+            border: 1px solid #2a3a2a;
+        }
+        .controls .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .controls .control-group .label {
+            font-size: 0.85rem;
+            color: #9aaa8a;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-right: 4px;
+        }
+        .controls .btn {
+            background: #1f2a1f;
+            color: #b8c8a8;
+            border: 1px solid #3a4a3a;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .controls .btn:hover {
+            background: #2a3a2a;
+            border-color: #5a7a4a;
+            color: #f0f0e0;
+        }
+        .controls .btn.active {
+            background: #3a6a2a;
+            border-color: #6a9a4a;
+            color: #fff;
+            box-shadow: 0 0 16px rgba(60, 130, 40, 0.3);
+        }
+        .controls .btn-faction {
+            min-width: 80px;
+        }
+        .controls .btn-tag {
+            min-width: 60px;
+        }
+        .controls .stats {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: #8a9a7a;
+            background: #0d120d;
+            padding: 4px 16px;
+            border-radius: 30px;
+            border: 1px solid #2a3a2a;
+        }
+        .controls .stats span {
+            color: #d8e8c8;
+            font-weight: 700;
+        }
+
+        /* ===== 礼物分组 ===== */
+        .gift-group {
+            margin-bottom: 32px;
+            background: #121812;
+            border-radius: 14px;
+            border: 1px solid #2a3a2a;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .gift-group .gift-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 22px;
+            background: #1a221a;
+            border-bottom: 1px solid #2a3a2a;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+        .gift-group .gift-header:hover {
+            background: #1f2a1f;
+        }
+        .gift-group .gift-header .gift-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .gift-group .gift-header .gift-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #f5e6b0;
+        }
+        .gift-group .gift-header .gift-battery {
+            font-size: 0.9rem;
+            color: #b8c8a8;
+            background: #2a3a2a;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+        .gift-group .gift-header .gift-battery i {
+            color: #ffd700;
+            margin-right: 4px;
+        }
+        .gift-group .gift-header .gift-count {
+            font-size: 0.85rem;
+            color: #8a9a7a;
+            margin-left: auto;
+        }
+        .gift-group .gift-header .gift-arrow {
+            color: #5a7a4a;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .gift-group .gift-header .gift-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .gift-group .gift-body {
+            padding: 18px 22px 22px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+        }
+        .gift-group .gift-body.collapsed {
+            display: none;
+        }
+
+        /* ===== 单位卡片 ===== */
+        .unit-card {
+            background: #1a201a;
+            border-radius: 12px;
+            border: 1px solid #2a3a2a;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .unit-card:hover {
+            transform: translateY(-4px);
+            border-color: #5a7a4a;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+        .unit-card .card-img {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: #0d120d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .unit-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.4s;
+        }
+        .unit-card .card-img img.load-error {
+            object-fit: contain;
+            padding: 12px;
+            opacity: 0.6;
+        }
+        .unit-card .card-img .img-placeholder {
+            color: #4a5a4a;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 10px;
+        }
+        .unit-card .card-body {
+            padding: 12px 14px 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .unit-card .card-body .unit-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #e8ecd8;
+            margin-bottom: 4px;
+        }
+        .unit-card .card-body .unit-sub {
+            font-size: 0.75rem;
+            color: #7a8a6a;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .unit-card .card-body .unit-sub .tag {
+            background: #2a3a2a;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #b8c8a8;
+        }
+        .unit-card .card-body .unit-desc {
+            font-size: 0.82rem;
+            color: #b8c8a8;
+            line-height: 1.5;
+            margin: 6px 0 10px;
+            flex: 1;
+        }
+        .unit-card .card-body .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .unit-card .card-body .card-actions .btn-video {
+            background: #2a3a2a;
+            color: #c8d8b8;
+            border: none;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: inherit;
+        }
+        .unit-card .card-body .card-actions .btn-video:hover {
+            background: #4a6a3a;
+            color: #fff;
+        }
+        .unit-card .card-body .card-actions .btn-video i {
+            font-size: 0.9rem;
+        }
+
+        /* ===== 视频模态框 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-overlay .modal-box {
+            background: #141a14;
+            border-radius: 16px;
+            max-width: 860px;
+            width: 100%;
+            border: 1px solid #4a6a3a;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-overlay .modal-box .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 22px;
+            background: #1a221a;
+            border-bottom: 1px solid #2a3a2a;
+        }
+        .modal-overlay .modal-box .modal-header .modal-title {
+            font-weight: 700;
+            color: #f5e6b0;
+            font-size: 1.1rem;
+        }
+        .modal-overlay .modal-box .modal-header .modal-close {
+            background: none;
+            border: none;
+            color: #8a9a7a;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: 0.2s;
+            padding: 0 6px;
+        }
+        .modal-overlay .modal-box .modal-header .modal-close:hover {
+            color: #ff6b6b;
+            transform: rotate(90deg);
+        }
+        .modal-overlay .modal-box .modal-body {
+            padding: 0;
+        }
+        .modal-overlay .modal-box .modal-body video {
+            width: 100%;
+            display: block;
+            background: #0a0c0a;
+            max-height: 70vh;
+        }
+
+        /* ===== 无结果 ===== */
+        .no-result {
+            text-align: center;
+            padding: 50px 20px;
+            color: #5a6a5a;
+            font-size: 1.1rem;
+        }
+        .no-result i {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 900px) {
+            .page-header h1 {
+                font-size: 1.6rem;
+                letter-spacing: 3px;
+            }
+            .page-header h1 small {
+                font-size: 0.8rem;
+                display: block;
+                margin-left: 0;
+                margin-top: 4px;
+            }
+            .live-section .live-wrapper .live-iframe {
+                height: 280px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .controls .control-group {
+                justify-content: center;
+            }
+            .controls .stats {
+                margin-left: 0;
+                text-align: center;
+            }
+            .gift-group .gift-body {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+                padding: 14px 16px 18px;
+            }
+            .unit-card .card-body .unit-name {
+                font-size: 0.95rem;
+            }
+            .unit-card .card-body .unit-desc {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .page-header {
+                padding: 12px 16px;
+            }
+            .page-header h1 {
+                font-size: 1.2rem;
+                letter-spacing: 2px;
+            }
+            .live-section {
+                padding: 12px 14px;
+            }
+            .live-section .live-wrapper .live-iframe {
+                height: 200px;
+            }
+            .units-section {
+                padding: 16px 14px 30px;
+            }
+            .controls .btn {
+                font-size: 0.75rem;
+                padding: 4px 12px;
+            }
+            .gift-group .gift-header {
+                padding: 10px 14px;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .gift-group .gift-header .gift-name {
+                font-size: 1rem;
+            }
+            .gift-group .gift-body {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 12px 12px 16px;
+            }
+            .unit-card .card-img {
+                aspect-ratio: 16/12;
+            }
+            .modal-overlay .modal-box .modal-header .modal-title {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* ===== 工具类 ===== */
+        .hidden {
+            display: none !important;
+        }
+        .text-gold {
+            color: #f5e6b0;
+        }
+        .text-muted {
+            color: #7a8a6a;
+        }
+        .gap-1 {
+            gap: 4px;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 顶部标题 ===== -->
+    <header class="page-header">
+        <h1>
+            🎖️ COH2 英雄连2 弹幕游戏
+            <small>｜B站巴顿</small>
+        </h1>
+        <div class="sub-tag">⚔️ https://live.bilibili.com/1987060053</div>
+    </header>
+
+    <!-- ===== 直播间 ===== -->
+    <section class="live-section">
+        <div class="live-wrapper">
+            <div class="live-header">
+                <div class="live-title">
+                    <i>●</i> 正在直播 · 巴顿英雄连2弹幕游戏
+                </div>
+                <a class="goto-btn" href="https://live.bilibili.com/1987060053" target="_blank">
+                    ▶ 前往直播间
+                </a>
+            </div>
+            <div class="live-iframe" id="liveIframeContainer">
+                <iframe
+                src="https://live.bilibili.com/1987060053"
+                allowfullscreen
+                loading="lazy"
+                title="B站直播间"
+                ></iframe>
+            </div>
+            <div class="live-fallback" id="liveFallback">
+                <p style="margin-bottom:16px;">⚠️ 若直播无法加载，请点击下方按钮直接跳转</p>
+                <a href="https://live.bilibili.com/1987060053" target="_blank">🔴 前往 B站直播间</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 单位展示区 ===== -->
+    <section class="units-section" id="app">
+
+        <!-- 控制栏 -->
+        <div class="controls">
+            <div class="control-group">
+                <span class="label">⚔️ 阵营</span>
+                <button class="btn btn-faction active" data-faction="all">全部</button>
+                <button class="btn btn-faction" data-faction="盟军">盟军</button>
+                <button class="btn btn-faction" data-faction="帝国">帝国</button>
+            </div>
+            <div class="control-group">
+                <span class="label">🏷️ 标签</span>
+                <button class="btn btn-tag active" data-tag="all">全部</button>
+                <button class="btn btn-tag" data-tag="步兵">步兵</button>
+                <button class="btn btn-tag" data-tag="装甲">装甲</button>
+                <button class="btn btn-tag" data-tag="远程">远程</button>
+            </div>
+            <div class="stats">
+                单位 <span id="unitCount">0</span> 个
+            </div>
+        </div>
+
+        <!-- 单位列表容器 -->
+        <div id="unitList"></div>
+    </section>
+
+    <!-- ===== 视频模态框 ===== -->
+    <div class="modal-overlay" id="videoModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title" id="modalVideoTitle">🎬 单位演示</span>
+                <button class="modal-close" id="modalCloseBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <video id="modalVideo" controls autoplay muted>
+                    <source src="" type="video/mp4" />
+                    您的浏览器不支持视频播放。
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  1. 数据定义
+        // ================================================================
+
+        // 本地资源根路径 (Windows 格式 → file:// 协议)
+        const BASE_PATH = 'file:///E:/1.File/Test/try/Auto/COH2/';
+
+        // 单位介绍（参考英雄连2风格，简短）
+        const INTROS = {
+            // —— 步兵 ——
+            '冲锋兵': '装备冲锋枪的突击步兵，擅长近距离压制和巷战，机动性高，是战场上的尖刀。',
+            '冲锋兵2': '精锐突击兵，配备改进型冲锋枪，射速更快，在突破防线时表现出色。',
+            '冲锋兵3': '身经百战的老兵，拥有更强的生存能力和压制火力，是步兵班的核心。',
+            '火箭筒兵': '反装甲专家，携带火箭筒可有效摧毁敌方轻型车辆和工事。',
+            '机枪兵': '轻机枪手，提供持续压制火力，能有效控制开阔地带。',
+            '机枪兵2': '改进型机枪组，射程更远，压制效果显著提升。',
+            '机枪兵3': '重装机枪手，配备大口径机枪，对步兵和轻装甲目标均有威胁。',
+            '狙击兵': '精准射手，擅长远距离狙杀关键目标，一发毙命。',
+            '狙击兵2': '精英狙击手，配备高倍瞄准镜，在复杂地形中游刃有余。',
+            '喷火兵': '携带火焰喷射器的特殊兵种，对建筑和掩体内的敌人有毁灭性打击。',
+            '手枪军官': '前线指挥官，手枪自卫，可为周围部队提供士气加成。',
+            '掷弹筒兵': '配备掷弹筒的步兵，可发射高爆弹或烟雾弹，提供战术支援。',
+            '重机枪兵': '重型机枪阵地，火力凶猛，是防御和区域封锁的中坚力量。',
+
+            // —— 装甲车 ——
+            '步战车': '轮式步兵战车，运载步兵快速突进，车载机枪可提供火力支援。',
+            '装甲车': '轻型装甲侦察车，速度快，适合侦查和侧翼骚扰。',
+
+            // —— 步兵杀手 ——
+            '轻型坦克': '快速轻型坦克，机动性强，适合侦查和打击步兵集群。',
+            '喷火坦克': '搭载火焰喷射器的特种坦克，对步兵和工事有毁灭性效果。',
+
+            // —— 坦克 ——
+            '中型坦克': '全能中型坦克，装甲与火力的平衡之选，适应多种战场环境。',
+            '重型坦克': '重型装甲巨兽，正面火力凶猛，是突破防线的核心力量。',
+
+            // —— 超级坦克 ——
+            '超级坦克': '终极陆战兵器，拥有无与伦比的装甲和火力，可扭转战局。',
+
+            // —— 远程 ——
+            '管风琴': '多管火箭炮，可对大面积区域实施饱和打击，威力惊人。',
+            '喀秋莎': '机动式火箭炮，快速部署，火力覆盖范围广，适合打击集群目标。',
+            '斯图卡': '俯冲轰炸机，精准投弹，对地面目标造成毁灭性打击。',
+            '灰熊': '重型自行火炮，拥有远程精确打击能力，可摧毁坚固工事。',
+            '榴弹炮': '牵引式榴弹炮，射程远，威力大，是阵地战的利器。',
+            '航空编队': '多机编队，对敌方纵深目标实施饱和轰炸，震慑敌军。',
+        };
+
+        // 礼物定义 (盟军 & 帝国)
+        const GIFT_CONFIG = {
+            '盟军': {
+                '步兵': { label: '小花花', battery: 1, count: '×1' },
+                '装甲车': { label: '你真好看', battery: 10, count: '×2' },
+                '步兵杀手': { label: '棒棒糖', battery: 50, count: '×2' },
+                '坦克': { label: '千纸鹤', battery: 52, count: '×2' },
+                '超级坦克': { label: '喜欢你', battery: 99, count: '×2' },
+                '管风琴': { label: '做我的小猫', battery: 99, count: '×1' },
+                '喀秋莎': { label: '音乐盒', battery: 99, count: '×1' },
+                '斯图卡': { label: '钻石戒指', battery: 199, count: '×2' },
+                '灰熊': { label: '花式夸夸', battery: 299, count: '×3' },
+                '榴弹炮': { label: '灿烂烟花', battery: 520, count: '×3' },
+                '航空编队': { label: '急速超跑', battery: 1000, count: '×1' },
+            },
+            '帝国': {
+                '步兵': { label: '人气票', battery: 1, count: '×1' },
+                '装甲车': { label: '比心', battery: 10, count: '×2' },
+                '步兵杀手': { label: '心动时刻', battery: 50, count: '×2' },
+                '坦克': { label: '情书', battery: 52, count: '×2' },
+                '超级坦克': { label: '捏捏小脸', battery: 99, count: '×2' },
+                '管风琴': { label: '水晶鞋', battery: 99, count: '×1' },
+                '喀秋莎': { label: '撒花', battery: 99, count: '×1' },
+                '斯图卡': { label: '告白花束', battery: 199, count: '×2' },
+                '灰熊': { label: '流星雨', battery: 299, count: '×3' },
+                '榴弹炮': { label: '旋转木马', battery: 520, count: '×3' },
+                '航空编队': { label: '私人飞机', battery: 1000, count: '×1' },
+            }
+        };
+
+        // 单位 → 类别映射 (用于标签分组)
+        const UNIT_TAG = {
+            // 步兵
+            '冲锋兵': '步兵',
+            '冲锋兵2': '步兵',
+            '冲锋兵3': '步兵',
+            '火箭筒兵': '步兵',
+            '机枪兵': '步兵',
+            '机枪兵2': '步兵',
+            '机枪兵3': '步兵',
+            '狙击兵': '步兵',
+            '狙击兵2': '步兵',
+            '喷火兵': '步兵',
+            '手枪军官': '步兵',
+            '掷弹筒兵': '步兵',
+            '重机枪兵': '步兵',
+            // 装甲
+            '步战车': '装甲',
+            '装甲车': '装甲',
+            '轻型坦克': '装甲',
+            '喷火坦克': '装甲',
+            '中型坦克': '装甲',
+            '重型坦克': '装甲',
+            '超级坦克': '装甲',
+            // 远程
+            '管风琴': '远程',
+            '喀秋莎': '远程',
+            '斯图卡': '远程',
+            '灰熊': '远程',
+            '榴弹炮': '远程',
+            '航空编队': '远程',
+        };
+
+        // 单位 → 礼物类别 (用于分组)
+        const UNIT_GIFT_CATEGORY = {
+            '冲锋兵': '步兵',
+            '冲锋兵2': '步兵',
+            '冲锋兵3': '步兵',
+            '火箭筒兵': '步兵',
+            '机枪兵': '步兵',
+            '机枪兵2': '步兵',
+            '机枪兵3': '步兵',
+            '狙击兵': '步兵',
+            '狙击兵2': '步兵',
+            '喷火兵': '步兵',
+            '手枪军官': '步兵',
+            '掷弹筒兵': '步兵',
+            '重机枪兵': '步兵',
+            '步战车': '装甲车',
+            '装甲车': '装甲车',
+            '轻型坦克': '步兵杀手',
+            '喷火坦克': '步兵杀手',
+            '中型坦克': '坦克',
+            '重型坦克': '坦克',
+            '超级坦克': '超级坦克',
+            '管风琴': '管风琴',
+            '喀秋莎': '喀秋莎',
+            '斯图卡': '斯图卡',
+            '灰熊': '灰熊',
+            '榴弹炮': '榴弹炮',
+            '航空编队': '航空编队',
+        };
+
+        // 所有单位列表 (按阵营)
+        const ALL_UNITS = {
+            '盟军': [
+                '冲锋兵', '冲锋兵2', '冲锋兵3', '火箭筒兵',
+                '机枪兵', '机枪兵2', '机枪兵3',
+                '狙击兵', '狙击兵2',
+                '喷火兵', '手枪军官', '掷弹筒兵', '重机枪兵',
+                '步战车', '装甲车',
+                '轻型坦克', '喷火坦克',
+                '中型坦克', '重型坦克',
+                '超级坦克',
+                '管风琴', '喀秋莎', '斯图卡', '灰熊', '榴弹炮', '航空编队'
+            ],
+            '帝国': [
+                '冲锋兵', '冲锋兵2', '冲锋兵3', '火箭筒兵',
+                '机枪兵', '机枪兵2', '机枪兵3',
+                '狙击兵', '狙击兵2',
+                '喷火兵', '手枪军官', '掷弹筒兵', '重机枪兵',
+                '步战车', '装甲车',
+                '轻型坦克', '喷火坦克',
+                '中型坦克', '重型坦克',
+                '超级坦克',
+                '管风琴', '喀秋莎', '斯图卡', '灰熊', '榴弹炮', '航空编队'
+            ]
+        };
+
+        // ================================================================
+        //  2. 工具函数
+        // ================================================================
+
+        // 获取单位图片路径 (尝试 png, jpg, jpeg)
+        function getImagePath(faction, unitName) {
+            const base = BASE_PATH + faction + '/';
+            const ext = (unitName === '航空编队') ? 'jpg' : 'png';
+            return base + unitName + '.' + ext;
+        }
+
+        // 获取视频路径
+        function getVideoPath() {
+            return BASE_PATH + '视频/测试.mp4';
+        }
+
+        // 获取礼物信息
+        function getGiftInfo(faction, category) {
+            return GIFT_CONFIG[faction]?.[category] || null;
+        }
+
+        // 获取单位介绍
+        function getIntro(unitName) {
+            return INTROS[unitName] || '精锐作战单位，在战场上发挥关键作用。';
+        }
+
+        // ================================================================
+        //  3. 渲染引擎
+        // ================================================================
+
+        let currentFaction = 'all';
+        let currentTag = 'all';
+
+        const container = document.getElementById('unitList');
+        const unitCountEl = document.getElementById('unitCount');
+
+        // 构建所有单位数据 (扁平列表)
+        function buildUnitList() {
+            const result = [];
+            for (const faction of ['盟军', '帝国']) {
+                for (const unitName of ALL_UNITS[faction]) {
+                    const category = UNIT_GIFT_CATEGORY[unitName];
+                    const tag = UNIT_TAG[unitName];
+                    const gift = getGiftInfo(faction, category);
+                    result.push({
+                        faction,
+                        unitName,
+                        category,
+                        tag,
+                        gift,
+                        intro: getIntro(unitName),
+                        imgPath: getImagePath(faction, unitName),
+                        videoPath: getVideoPath(),
+                    });
+                }
+            }
+            return result;
+        }
+
+        const allUnits = buildUnitList();
+
+        // 过滤单位
+        function filterUnits(units, faction, tag) {
+            return units.filter(u => {
+                if (faction !== 'all' && u.faction !== faction) return false;
+                if (tag !== 'all' && u.tag !== tag) return false;
+                return true;
+            });
+        }
+
+        // 按阵营 → 礼物类别分组
+        function groupByGift(units) {
+            const groups = {};
+            for (const u of units) {
+                const key = u.faction + '|' + u.category;
+                if (!groups[key]) {
+                    groups[key] = {
+                        faction: u.faction,
+                        category: u.category,
+                        gift: u.gift,
+                        units: []
+                    };
+                }
+                groups[key].units.push(u);
+            }
+            return Object.values(groups);
+        }
+
+        // 渲染
+        function render() {
+            const filtered = filterUnits(allUnits, currentFaction, currentTag);
+            const grouped = groupByGift(filtered);
+
+            if (grouped.length === 0) {
+                container.innerHTML = `
+                    <div class="no-result">
+                        <i>🔍</i>
+                        没有找到匹配的单位<br>
+                        <span class="text-muted" style="font-size:0.9rem;">尝试调整筛选条件</span>
+                    </div>
+                `;
+                unitCountEl.textContent = '0';
+                return;
+            }
+
+            let html = '';
+            let totalUnits = 0;
+
+            // 按阵营排序 (盟军优先)
+            grouped.sort((a, b) => {
+                if (a.faction === b.faction) return a.category.localeCompare(b.category);
+                return a.faction === '盟军' ? -1 : 1;
+            });
+
+            for (const group of grouped) {
+                const { faction, category, gift, units } = group;
+                totalUnits += units.length;
+
+                const giftLabel = gift ? `${gift.label} ${gift.battery}电池 ${gift.count}` : category;
+
+                // 礼物图标 (简单映射)
+                const iconMap = {
+                    '步兵': '🔫',
+                    '装甲车': '🚗',
+                    '步兵杀手': '💥',
+                    '坦克': '🔧',
+                    '超级坦克': '⭐',
+                    '管风琴': '🎵',
+                    '喀秋莎': '🚀',
+                    '斯图卡': '✈️',
+                    '灰熊': '🐻',
+                    '榴弹炮': '💣',
+                    '航空编队': '🛩️',
+                };
+                const icon = iconMap[category] || '🎯';
+
+                html += `
+                    <div class="gift-group" data-faction="${faction}" data-category="${category}">
+                        <div class="gift-header" onclick="toggleGift(this)">
+                            <span class="gift-icon">${icon}</span>
+                            <span class="gift-name">${faction} · ${category}</span>
+                            <span class="gift-battery">⚡ ${gift ? gift.label : ''} ${gift ? gift.battery : ''}电池</span>
+                            <span class="gift-count">${units.length} 个单位</span>
+                            <span class="gift-arrow open">▼</span>
+                        </div>
+                        <div class="gift-body" id="giftBody-${faction}-${category}">
+                `;
+
+                for (const u of units) {
+                    html += `
+                        <div class="unit-card" data-unit="${u.unitName}">
+                            <div class="card-img">
+                                <img src="${u.imgPath}" alt="${u.unitName}" loading="lazy"
+                                     onerror="this.onerror=null; this.classList.add('load-error'); this.parentElement.querySelector('.img-placeholder').style.display='block';">
+                                <div class="img-placeholder" style="display:none;">🖼️ ${u.unitName}</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="unit-name">${u.unitName}</div>
+                                <div class="unit-sub">
+                                    <span class="tag">${u.tag}</span>
+                                    <span>${u.faction}</span>
+                                    ${u.gift ? `<span style="color:#b8a87a;">${u.gift.label} ${u.gift.battery}⚡</span>` : ''}
+                                </div>
+                                <div class="unit-desc">${u.intro}</div>
+                                <div class="card-actions">
+                                    <button class="btn-video" onclick="playVideo('${u.unitName}', '${u.videoPath}')">
+                                        ▶ 演示视频
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            unitCountEl.textContent = totalUnits;
+        }
+
+        // ================================================================
+        //  4. 交互控制
+        // ================================================================
+
+        // 展开/折叠礼物组
+        window.toggleGift = function(header) {
+            const body = header.nextElementSibling;
+            const arrow = header.querySelector('.gift-arrow');
+            if (body) {
+                body.classList.toggle('collapsed');
+                if (arrow) arrow.classList.toggle('open');
+            }
+        };
+
+        // 播放视频 (模态框)
+        window.playVideo = function(unitName, videoPath) {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('modalVideo');
+            const title = document.getElementById('modalVideoTitle');
+            title.textContent = `🎬 ${unitName} · 单位演示`;
+            video.src = videoPath;
+            video.load();
+            modal.classList.add('open');
+            video.play().catch(() => {});
+        };
+
+        // 关闭模态框
+        document.getElementById('modalCloseBtn').addEventListener('click', function() {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('modalVideo');
+            modal.classList.remove('open');
+            video.pause();
+            video.src = '';
+        });
+
+        // 点击外部关闭模态框
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                const video = document.getElementById('modalVideo');
+                this.classList.remove('open');
+                video.pause();
+                video.src = '';
+            }
+        });
+
+        // 键盘 ESC 关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('videoModal');
+                if (modal.classList.contains('open')) {
+                    const video = document.getElementById('modalVideo');
+                    modal.classList.remove('open');
+                    video.pause();
+                    video.src = '';
+                }
+            }
+        });
+
+        // 阵营按钮
+        document.querySelectorAll('.btn-faction').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.btn-faction').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFaction = this.dataset.faction;
+                render();
+            });
+        });
+
+        // 标签按钮
+        document.querySelectorAll('.btn-tag').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.btn-tag').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentTag = this.dataset.tag;
+                render();
+            });
+        });
+
+        // ================================================================
+        //  5. 直播间 iframe 降级
+        // ================================================================
+
+        (function checkLiveIframe() {
+            const container = document.getElementById('liveIframeContainer');
+            const fallback = document.getElementById('liveFallback');
+            // 5秒后如果 iframe 加载失败，显示降级
+            setTimeout(() => {
+                const iframe = container.querySelector('iframe');
+                if (iframe) {
+                    // 尝试检测是否加载成功 (通过 onload 事件)
+                    let loaded = false;
+                    iframe.onload = function() {
+                        loaded = true;
+                    };
+                    // 额外检测: 如果 8 秒后还没加载完，显示降级
+                    setTimeout(() => {
+                        if (!loaded) {
+                            container.style.display = 'none';
+                            fallback.style.display = 'block';
+                        }
+                    }, 3000);
+                }
+            }, 2000);
+        })();
+
+        // ================================================================
+        //  6. 启动
+        // ================================================================
+
+        render();
+
+        // 控制台提示
+        console.log('🎖️ B站巴顿英雄连2弹幕游戏 · 已加载');
+        console.log('📦 单位总数:', allUnits.length);
+        console.log('💡 筛选: 点击阵营/标签按钮切换');
+    </script>
+
+</body>
+</html>

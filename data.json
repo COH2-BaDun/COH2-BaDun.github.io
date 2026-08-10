@@ -3,7 +3,7 @@
     "步兵": {
       "小花花": {
         "value": 1,
-        "image": "profile.jpg",
+        "image": "礼物/小花花/小花花.jpg",
         "count": 1,
         "units": [
           {
@@ -66,7 +66,7 @@
       },
       "你真好看": {
         "value": 10,
-        "image": "profile.jpg",
+        "image": "礼物/你真好看/你真好看.jpg",
         "count": 1,
         "units": [
           {
@@ -82,7 +82,7 @@
     "装甲": {
       "棒棒糖": {
         "value": 50,
-        "image": "profile.jpg",
+        "image": "礼物/棒棒糖/棒棒糖.jpg",
         "count": 2,
         "units": [
           {
@@ -103,7 +103,7 @@
       },
       "千纸鹤": {
         "value": 52,
-        "image": "profile.jpg",
+        "image": "礼物/千纸鹤/千纸鹤.jpg",
         "count": 2,
         "units": [
           {
@@ -124,7 +124,7 @@
       },
       "喜欢你": {
         "value": 99,
-        "image": "profile.jpg",
+        "image": "礼物/喜欢你/喜欢你.jpg",
         "count": 2,
         "units": [
           {
@@ -145,7 +145,7 @@
       },
       "做我的小猫": {
         "value": 99,
-        "image": "profile.jpg",
+        "image": "礼物/做我的小猫/做我的小猫.jpg",
         "count": 2,
         "units": [
           {
@@ -161,7 +161,7 @@
     "远程": {
       "音乐盒": {
         "value": 99,
-        "image": "profile.jpg",
+        "image": "礼物/音乐盒/音乐盒.jpg",
         "count": 1,
         "units": [
           {
@@ -175,7 +175,7 @@
       },
       "钻石戒指": {
         "value": 199,
-        "image": "profile.jpg",
+        "image": "礼物/钻石戒指/钻石戒指.jpg",
         "count": 1,
         "units": [
           {
@@ -189,7 +189,7 @@
       },
       "花式夸夸": {
         "value": 299,
-        "image": "profile.jpg",
+        "image": "礼物/花式夸夸/花式夸夸.jpg",
         "count": 2,
         "units": [
           {
@@ -210,7 +210,7 @@
       },
       "灿烂烟花": {
         "value": 520,
-        "image": "profile.jpg",
+        "image": "礼物/灿烂烟花/灿烂烟花.jpg",
         "count": 3,
         "units": [
           {
@@ -231,7 +231,7 @@
       },
       "急速超跑": {
         "value": 1000,
-        "image": "profile.jpg",
+        "image": "礼物/急速超跑/急速超跑.jpg",
         "count": 1,
         "units": [
           {
@@ -249,7 +249,7 @@
     "步兵": {
       "人气票": {
         "value": 1,
-        "image": "profile.jpg",
+        "image": "礼物/人气票/人气票.jpg",
         "count": 1,
         "units": [
           {
@@ -312,7 +312,7 @@
       },
       "比心": {
         "value": 10,
-        "image": "profile.jpg",
+        "image": "礼物/比心/比心.jpg",
         "count": 1,
         "units": [
           {
@@ -328,7 +328,7 @@
     "装甲": {
       "心动时刻": {
         "value": 50,
-        "image": "profile.jpg",
+        "image": "礼物/心动时刻/心动时刻.jpg",
         "count": 2,
         "units": [
           {
@@ -349,7 +349,7 @@
       },
       "情书": {
         "value": 52,
-        "image": "profile.jpg",
+        "image": "礼物/情书/情书.jpg",
         "count": 2,
         "units": [
           {
@@ -370,7 +370,7 @@
       },
       "捏捏小脸": {
         "value": 99,
-        "image": "profile.jpg",
+        "image": "礼物/捏捏小脸/捏捏小脸.jpg",
         "count": 2,
         "units": [
           {
@@ -391,7 +391,7 @@
       },
       "水晶鞋": {
         "value": 99,
-        "image": "profile.jpg",
+        "image": "礼物/水晶鞋/水晶鞋.jpg",
         "count": 2,
         "units": [
           {
@@ -407,7 +407,7 @@
     "远程": {
       "撒花": {
         "value": 99,
-        "image": "profile.jpg",
+        "image": "礼物/撒花/撒花.jpg",
         "count": 1,
         "units": [
           {
@@ -421,7 +421,7 @@
       },
       "告白花束": {
         "value": 199,
-        "image": "profile.jpg",
+        "image": "礼物/告白花束/告白花束.jpg",
         "count": 1,
         "units": [
           {
@@ -435,7 +435,7 @@
       },
       "流星雨": {
         "value": 299,
-        "image": "profile.jpg",
+        "image": "礼物/流星雨/流星雨.jpg",
         "count": 2,
         "units": [
           {
@@ -456,7 +456,7 @@
       },
       "旋转木马": {
         "value": 520,
-        "image": "profile.jpg",
+        "image": "礼物/旋转木马/旋转木马.jpg",
         "count": 3,
         "units": [
           {
@@ -477,7 +477,7 @@
       },
       "私人飞机": {
         "value": 1000,
-        "image": "profile.jpg",
+        "image": "礼物/私人飞机/私人飞机.jpg",
         "count": 1,
         "units": [
           {

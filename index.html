@@ -103,6 +103,7 @@
             position: relative;
             aspect-ratio: 16 / 9;
             max-height: 75vh;
+            width: 100%;
         }
         .live-section iframe {
             width: 100%;
@@ -110,7 +111,6 @@
             border: none;
             display: block;
         }
-        /* 移动端直播窗口高度适配 */
         @media (max-width: 640px) {
             .live-section {
                 aspect-ratio: 16 / 9;
@@ -136,59 +136,111 @@
             margin-top: 10px;
         }
 
-        /* 阵营标题 */
-        .faction-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin: 30px 0 12px 0;
-            padding-left: 8px;
-            border-left: 5px solid #e8b84a;
-            letter-spacing: 2px;
+        /* 阵营选项卡 */
+        .faction-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #2a313c;
+            padding-bottom: 8px;
         }
-        .faction-title.allied {
-            border-left-color: #3d7eb3;
+        .faction-tab {
+            padding: 8px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            color: #8a9eb0;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: 0.2s;
+            letter-spacing: 1px;
         }
-        .faction-title.axis {
-            border-left-color: #b34a3d;
+        .faction-tab:hover {
+            color: #d0ddee;
+            background: #1a222c;
+        }
+        .faction-tab.active {
+            color: #fff;
+            background: #2a3a4e;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .faction-tab .icon-soviet {
+            color: #cc3333;
+        }
+        .faction-tab .icon-nazi {
+            color: #b0b0b0;
         }
 
-        /* 标签（步兵/装甲/远程） */
+        /* 阵营内容容器 */
+        .faction-content {
+            display: none;
+        }
+        .faction-content.active {
+            display: block;
+        }
+
+        /* 标签折叠 */
         .tag-group {
-            margin-bottom: 28px;
+            margin-bottom: 20px;
+            border: 1px solid #26313e;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #111a24;
         }
         .tag-label {
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
             font-size: 1.05rem;
             font-weight: 600;
             background: #1e2835;
-            padding: 4px 18px;
-            border-radius: 20px;
-            margin-bottom: 14px;
-            border: 1px solid #354252;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.15s;
+            border-bottom: 1px solid transparent;
             color: #c8d6e5;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+        }
+        .tag-label:hover {
+            background: #263340;
+        }
+        .tag-label .arrow {
+            font-size: 0.8rem;
+            transition: transform 0.25s;
+            color: #7a8fa8;
+        }
+        .tag-group.collapsed .tag-label .arrow {
+            transform: rotate(-90deg);
+        }
+        .tag-group.collapsed .gift-group-wrapper {
+            display: none;
+        }
+        .gift-group-wrapper {
+            padding: 12px 16px 16px;
         }
 
         /* 礼物分组 */
         .gift-group {
-            background: #111a24;
-            border-radius: 12px;
-            padding: 14px 16px 16px;
-            margin-bottom: 16px;
-            border: 1px solid #273340;
+            background: #0f1822;
+            border-radius: 10px;
+            padding: 12px 14px 14px;
+            margin-bottom: 14px;
+            border: 1px solid #1f2b38;
             transition: border-color 0.2s;
         }
-        .gift-group:hover {
-            border-color: #3e5268;
+        .gift-group:last-child {
+            margin-bottom: 0;
         }
         .gift-header {
             display: flex;
             align-items: center;
             flex-wrap: wrap;
             gap: 8px 16px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #2a3746;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #1f2b38;
         }
         .gift-icon {
             width: 34px;
@@ -201,7 +253,7 @@
         }
         .gift-name {
             font-weight: 600;
-            font-size: 1.05rem;
+            font-size: 1.0rem;
             color: #f0e6c5;
         }
         .gift-value {
@@ -255,7 +307,7 @@
             border-bottom: 1px solid #25303e;
         }
         .unit-card-name {
-            padding: 8px 10px 6px;
+            padding: 8px 10px 4px;
             font-weight: 600;
             font-size: 0.92rem;
             text-align: center;
@@ -263,10 +315,10 @@
             background: #0f1822;
             letter-spacing: 0.3px;
         }
-        .unit-card-badge {
+        .unit-card-meta {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             padding: 0 8px 8px;
             font-size: 0.7rem;
             color: #8ea5bf;
@@ -274,7 +326,7 @@
             border-top: 1px solid #1f2b38;
             flex-wrap: wrap;
         }
-        .unit-card-badge span {
+        .unit-card-meta span {
             background: #1c2837;
             padding: 1px 10px;
             border-radius: 30px;
@@ -351,7 +403,6 @@
             margin: 6px 0 12px;
             color: #f0e8d0;
         }
-        /* 模态图片轮播 */
         .modal-carousel {
             position: relative;
             background: #0d141d;
@@ -497,7 +548,7 @@
             </div>
             <div class="header-right">
                 <a href="https://live.bilibili.com/1987060053" target="_blank" rel="noopener">
-                    🔴 直播间 &gt;
+                    直播间 &gt;
                 </a>
             </div>
         </header>
@@ -514,7 +565,7 @@
 
         <!-- 单位展示 -->
         <section class="units-section" id="unitsContainer">
-            <div class="loading-text">⏳ 加载单位数据...</div>
+            <div class="loading-text">加载单位数据...</div>
         </section>
     </div>
 
@@ -523,7 +574,6 @@
         <div class="modal-box" id="modalBox">
             <button class="modal-close" id="modalClose">✕</button>
             <div class="modal-title" id="modalTitle">单位名称</div>
-            <!-- 轮播 -->
             <div class="modal-carousel" id="modalCarousel">
                 <img id="modalCarouselImg" src="" alt="单位图片">
                 <div class="carousel-nav" id="carouselNav"></div>
@@ -544,118 +594,169 @@
         //  1. 加载 data.json
         // ============================================================
         let allData = null;
+        let currentFaction = '盟军';
 
         async function loadData() {
             try {
                 const resp = await fetch('data.json');
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 allData = await resp.json();
-                renderUnits(allData);
+                renderFactionTabs();
+                renderFaction('盟军');
             } catch (err) {
                 document.getElementById('unitsContainer').innerHTML =
-                    `<div class="loading-text" style="color:#e66767;">⚠️ 数据加载失败：${err.message}</div>`;
+                    `<div class="loading-text" style="color:#e66767;">数据加载失败：${err.message}</div>`;
                 console.error(err);
             }
         }
 
         // ============================================================
-        //  2. 渲染单位
+        //  2. 渲染阵营选项卡
         // ============================================================
-        function renderUnits(data) {
+        function renderFactionTabs() {
             const container = document.getElementById('unitsContainer');
+            // 清空，但保留加载状态
             container.innerHTML = '';
 
-            // 阵营顺序
+            // 创建选项卡容器
+            const tabsDiv = document.createElement('div');
+            tabsDiv.className = 'faction-tabs';
+
             const factions = ['盟军', '帝国'];
-            // 标签顺序
-            const tagOrder = ['步兵', '装甲', '远程'];
-            // 标签显示名
-            const tagLabels = {
-                '步兵': '🚶 步兵',
-                '装甲': '🛡️ 装甲',
-                '远程': '🎯 远程'
+            const icons = {
+                '盟军': '☭',
+                '帝国': '⚡'
+            };
+            const iconClass = {
+                '盟军': 'icon-soviet',
+                '帝国': 'icon-nazi'
             };
 
-            for (const faction of factions) {
-                const factionData = data[faction];
-                if (!factionData) continue;
+            factions.forEach(f => {
+                const btn = document.createElement('button');
+                btn.className = 'faction-tab' + (f === currentFaction ? ' active' : '');
+                btn.dataset.faction = f;
+                btn.innerHTML = `<span class="${iconClass[f]}">${icons[f]}</span> ${f}`;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.faction-tab').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFaction = f;
+                    renderFaction(f);
+                });
+                tabsDiv.appendChild(btn);
+            });
 
-                // 阵营标题
-                const titleDiv = document.createElement('div');
-                titleDiv.className = `faction-title ${faction === '盟军' ? 'allied' : 'axis'}`;
-                titleDiv.textContent = faction === '盟军' ? '🇺🇸 盟军' : '🇩🇪 帝国';
-                container.appendChild(titleDiv);
+            container.appendChild(tabsDiv);
 
-                for (const tag of tagOrder) {
-                    const tagData = factionData[tag];
-                    if (!tagData || Object.keys(tagData).length === 0) continue;
-
-                    const tagGroup = document.createElement('div');
-                    tagGroup.className = 'tag-group';
-
-                    const tagLabel = document.createElement('div');
-                    tagLabel.className = 'tag-label';
-                    tagLabel.textContent = tagLabels[tag] || tag;
-                    tagGroup.appendChild(tagLabel);
-
-                    // 遍历礼物（按礼物名称排序）
-                    const giftNames = Object.keys(tagData).sort((a, b) => {
-                        // 按价值排序
-                        return (tagData[a].value || 0) - (tagData[b].value || 0);
-                    });
-
-                    for (const giftName of giftNames) {
-                        const gift = tagData[giftName];
-                        if (!gift || !gift.units || gift.units.length === 0) continue;
-
-                        const giftGroup = document.createElement('div');
-                        giftGroup.className = 'gift-group';
-
-                        // 礼物头部
-                        const header = document.createElement('div');
-                        header.className = 'gift-header';
-
-                        const icon = document.createElement('img');
-                        icon.className = 'gift-icon';
-                        icon.src = gift.image || 'profile.jpg';
-                        icon.alt = giftName;
-                        icon.loading = 'lazy';
-
-                        const nameSpan = document.createElement('span');
-                        nameSpan.className = 'gift-name';
-                        nameSpan.textContent = '🎁 ' + giftName;
-
-                        const valueSpan = document.createElement('span');
-                        valueSpan.className = 'gift-value';
-                        valueSpan.textContent = `⚡ ${gift.value || 0} 电池`;
-
-                        const countSpan = document.createElement('span');
-                        countSpan.className = 'gift-count';
-                        countSpan.textContent = `出场 ×${gift.count || 1}`;
-
-                        header.append(icon, nameSpan, valueSpan, countSpan);
-                        giftGroup.appendChild(header);
-
-                        // 单位网格
-                        const grid = document.createElement('div');
-                        grid.className = 'unit-grid';
-
-                        for (const unit of gift.units) {
-                            const card = createUnitCard(unit, faction, giftName, gift.value, gift.count);
-                            grid.appendChild(card);
-                        }
-
-                        giftGroup.appendChild(grid);
-                        tagGroup.appendChild(giftGroup);
-                    }
-
-                    container.appendChild(tagGroup);
-                }
-            }
+            // 创建两个阵营内容容器（用于切换）
+            const contentWrapper = document.createElement('div');
+            contentWrapper.id = 'factionContentWrapper';
+            container.appendChild(contentWrapper);
         }
 
         // ============================================================
-        //  3. 创建单位卡片
+        //  3. 渲染指定阵营
+        // ============================================================
+        function renderFaction(faction) {
+            const wrapper = document.getElementById('factionContentWrapper');
+            wrapper.innerHTML = '';
+
+            const factionData = allData[faction];
+            if (!factionData) {
+                wrapper.innerHTML = '<div class="loading-text">该阵营暂无数据</div>';
+                return;
+            }
+
+            const tagOrder = ['步兵', '装甲', '远程'];
+            const tagLabels = {
+                '步兵': '步兵',
+                '装甲': '装甲',
+                '远程': '远程'
+            };
+
+            for (const tag of tagOrder) {
+                const tagData = factionData[tag];
+                if (!tagData || Object.keys(tagData).length === 0) continue;
+
+                const tagGroup = document.createElement('div');
+                tagGroup.className = 'tag-group';
+
+                // 标签头（可折叠）
+                const label = document.createElement('div');
+                label.className = 'tag-label';
+                label.innerHTML = `${tagLabels[tag]} <span class="arrow">▼</span>`;
+                label.addEventListener('click', () => {
+                    tagGroup.classList.toggle('collapsed');
+                });
+                tagGroup.appendChild(label);
+
+                // 内容包裹
+                const wrapperDiv = document.createElement('div');
+                wrapperDiv.className = 'gift-group-wrapper';
+
+                // 遍历礼物（按价值排序）
+                const giftNames = Object.keys(tagData).sort((a, b) => {
+                    return (tagData[a].value || 0) - (tagData[b].value || 0);
+                });
+
+                for (const giftName of giftNames) {
+                    const gift = tagData[giftName];
+                    if (!gift || !gift.units || gift.units.length === 0) continue;
+
+                    const giftGroup = document.createElement('div');
+                    giftGroup.className = 'gift-group';
+
+                    // 礼物头部
+                    const header = document.createElement('div');
+                    header.className = 'gift-header';
+
+                    const icon = document.createElement('img');
+                    icon.className = 'gift-icon';
+                    // 使用礼物路径：礼物/礼物名/礼物名.jpg
+                    const giftImagePath = `礼物/${giftName}/${giftName}.jpg`;
+                    icon.src = giftImagePath;
+                    icon.alt = giftName;
+                    icon.loading = 'lazy';
+                    icon.onerror = function() { this.src = 'profile.jpg'; };
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'gift-name';
+                    nameSpan.textContent = giftName;
+
+                    const valueSpan = document.createElement('span');
+                    valueSpan.className = 'gift-value';
+                    valueSpan.textContent = `⚡ ${gift.value || 0} 电池`;
+
+                    const countSpan = document.createElement('span');
+                    countSpan.className = 'gift-count';
+                    countSpan.textContent = `出场 ×${gift.count || 1}`;
+
+                    header.append(icon, nameSpan, valueSpan, countSpan);
+                    giftGroup.appendChild(header);
+
+                    // 单位网格
+                    const grid = document.createElement('div');
+                    grid.className = 'unit-grid';
+
+                    for (const unit of gift.units) {
+                        const card = createUnitCard(unit, faction, giftName, gift.value, gift.count);
+                        grid.appendChild(card);
+                    }
+
+                    giftGroup.appendChild(grid);
+                    wrapperDiv.appendChild(giftGroup);
+                }
+
+                tagGroup.appendChild(wrapperDiv);
+                wrapper.appendChild(tagGroup);
+            }
+
+            // 默认展开所有tag
+            wrapper.querySelectorAll('.tag-group').forEach(g => g.classList.remove('collapsed'));
+        }
+
+        // ============================================================
+        //  4. 创建单位卡片
         // ============================================================
         function createUnitCard(unit, faction, giftName, giftValue, giftCount) {
             const card = document.createElement('div');
@@ -663,7 +764,6 @@
 
             const img = document.createElement('img');
             img.className = 'unit-card-img';
-            // 取第一张图作为封面
             const firstImg = unit.images && unit.images.length > 0 ? unit.images[0] : 'profile.jpg';
             img.src = faction + '/' + firstImg;
             img.alt = unit.name;
@@ -674,17 +774,17 @@
             nameDiv.className = 'unit-card-name';
             nameDiv.textContent = unit.name;
 
-            const badge = document.createElement('div');
-            badge.className = 'unit-card-badge';
-            const tagSpan = document.createElement('span');
-            tagSpan.textContent = '🏷️ ' + (unit.tag || '');
-            const giftSpan = document.createElement('span');
-            giftSpan.textContent = '🎁 ' + giftName;
-            badge.append(tagSpan, giftSpan);
+            const meta = document.createElement('div');
+            meta.className = 'unit-card-meta';
+            // 只显示价值和出场数量
+            const valSpan = document.createElement('span');
+            valSpan.textContent = `⚡ ${giftValue || 0}`;
+            const cntSpan = document.createElement('span');
+            cntSpan.textContent = `×${giftCount || 1}`;
+            meta.append(valSpan, cntSpan);
 
-            card.append(img, nameDiv, badge);
+            card.append(img, nameDiv, meta);
 
-            // 点击弹出模态
             card.addEventListener('click', () => {
                 openModal(unit, faction, giftName, giftValue, giftCount);
             });
@@ -693,7 +793,7 @@
         }
 
         // ============================================================
-        //  4. 模态弹窗
+        //  5. 模态弹窗
         // ============================================================
         let currentImages = [];
         let currentIndex = 0;
@@ -707,23 +807,18 @@
             const desc = document.getElementById('modalDesc');
             const video = document.getElementById('modalVideo');
 
-            // 标题
             title.textContent = unit.name;
 
-            // 图片列表
             const imgNames = unit.images && unit.images.length > 0 ? unit.images : ['profile.jpg'];
             currentImages = imgNames.map(name => faction + '/' + name);
             currentIndex = 0;
 
-            // 显示第一张
             carouselImg.src = currentImages[0] || 'profile.jpg';
             carouselImg.alt = unit.name;
             carouselImg.onerror = function() { this.src = 'profile.jpg'; };
 
-            // 渲染导航点
             nav.innerHTML = '';
             if (currentImages.length > 1) {
-                // 左箭头
                 const leftBtn = document.createElement('button');
                 leftBtn.textContent = '‹';
                 leftBtn.addEventListener('click', (e) => {
@@ -750,23 +845,21 @@
                     changeImage(1);
                 });
                 nav.appendChild(rightBtn);
+                nav.style.display = 'flex';
             } else {
-                // 单张图不显示导航
                 nav.style.display = 'none';
             }
 
-            // 元信息
+            // 元信息（去掉emoji）
             meta.innerHTML = `
-                <span>🏷️ ${unit.tag || '未分类'}</span>
-                <span>🎁 ${giftName}</span>
-                <span>⚡ ${giftValue || 0} 电池</span>
-                <span>出场 ×${giftCount || 1}</span>
+                <span>标签: ${unit.tag || '未分类'}</span>
+                <span>礼物: ${giftName}</span>
+                <span>价值: ${giftValue || 0} 电池</span>
+                <span>出场: ×${giftCount || 1}</span>
             `;
 
-            // 介绍
             desc.textContent = unit.description || '暂无介绍。';
 
-            // 视频
             const videoSrc = unit.video ? '视频/' + unit.video : '';
             if (videoSrc) {
                 video.style.display = 'block';
@@ -784,12 +877,8 @@
                 video.style.display = 'none';
             }
 
-            // 显示模态
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-
-            // 存储当前单位数据以便切换图片时使用
-            overlay.dataset.faction = faction;
         }
 
         function changeImage(delta) {
@@ -807,14 +896,12 @@
             img.src = currentImages[currentIndex] || 'profile.jpg';
             img.onerror = function() { this.src = 'profile.jpg'; };
 
-            // 更新点
             const dots = document.querySelectorAll('#carouselNav .dot');
             dots.forEach((dot, i) => {
                 dot.classList.toggle('active', i === currentIndex);
             });
         }
 
-        // 关闭模态
         function closeModal() {
             const overlay = document.getElementById('modalOverlay');
             overlay.classList.remove('active');
@@ -823,7 +910,6 @@
             video.pause();
         }
 
-        // 点击外部关闭
         document.getElementById('modalOverlay').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) closeModal();
         });
@@ -839,11 +925,10 @@
         });
 
         // ============================================================
-        //  5. 启动
+        //  6. 启动
         // ============================================================
         loadData();
 
-        // 头像容错
         document.getElementById('avatarImg').onerror = function() {
             this.src = 'profile.jpg';
         };

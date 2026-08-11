@@ -89,24 +89,32 @@
             text-decoration: none;
         }
 
-        /* 直播窗口 - 纯CSS自适应 */
         .live-section {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%; /* 16:9 */
             margin-bottom: 28px;
             border-radius: 14px;
             overflow: hidden;
             background: #131b24;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
             border: 1px solid #26313e;
+            position: relative;
+            width: 100%;
+            /* 高度由scale决定，容器高度自适应 */;
         }
-        .live-section iframe {
+        .live-wrapper {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            /* 保持16:9比例，高度由padding撑起 */
+            padding-top: 56.25%;
+            /* 9/16 = 0.5625 */;
+        }
+        .live-wrapper iframe {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 1280px;
+            height: 720px;
+            transform-origin: top left;
             border: none;
         }
 
@@ -140,7 +148,7 @@
         .faction-tab.active {
             color: #fff;
             background: #2a3a4e;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
         .faction-tab .icon-soviet {
             color: #cc3333;
@@ -232,6 +240,7 @@
             border: 1px solid #324252;
             white-space: nowrap;
         }
+
         .gift-description {
             font-size: 0.82rem;
             color: #a0b8cf;
@@ -287,7 +296,6 @@
             letter-spacing: 0.3px;
         }
 
-        /* 模态框 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -415,6 +423,7 @@
             background: #ffd966;
             transform: scale(1.2);
         }
+
         .modal-description {
             font-size: 0.98rem;
             color: #c6d4e3;
@@ -437,12 +446,14 @@
             max-height: 50vh;
             background: #000;
         }
+
         .loading-text {
             text-align: center;
             padding: 40px 0;
             color: #7a8fa8;
             font-size: 1.1rem;
         }
+
         .modal-box::-webkit-scrollbar {
             width: 6px;
         }
@@ -456,26 +467,25 @@
     </style>
 </head>
 <body>
-
-    <div class="app" id="app">
+    <div class="app">
         <header class="header">
             <div class="header-left">
                 <img src="profile.jpg" alt="avatar" class="avatar" id="avatarImg">
                 <span class="site-title">巴顿弹幕英雄连2</span>
             </div>
             <div class="header-right">
-                <a href="https://live.bilibili.com/1987060053" target="_blank" rel="noopener">
-                    直播 &gt;
-                </a>
+                <a href="https://live.bilibili.com/1987060053" target="_blank" rel="noopener">直播 &gt;</a>
             </div>
         </header>
 
-        <!-- 直播窗口 - 纯CSS自适应 -->
         <div class="live-section">
-            <iframe
-                src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=1987060053"
-                allow="autoplay; encrypted-media" allowfullscreen>
-            </iframe>
+            <div class="live-wrapper" id="liveWrapper">
+                <iframe id="bilibili-live-iframe"
+                    src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=1987060053"
+                    frameborder="no" framespacing="0" scrolling="no"
+                    allow="autoplay; encrypted-media" allowfullscreen="true">
+                </iframe>
+            </div>
         </div>
 
         <section class="units-section" id="unitsContainer">
@@ -483,12 +493,11 @@
         </section>
     </div>
 
-    <!-- 模态框 -->
     <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box" id="modalBox">
+        <div class="modal-box">
             <button class="modal-close" id="modalClose">✕</button>
             <div class="modal-title" id="modalTitle">单位名称</div>
-            <div class="modal-carousel" id="modalCarousel">
+            <div class="modal-carousel">
                 <img id="modalCarouselImg" src="" alt="单位图片">
                 <div class="carousel-nav" id="carouselNav"></div>
             </div>
@@ -503,15 +512,79 @@
     </div>
 
     <script>
+        // ===== 直播窗口 scale 自适应 =====
+        function scaleIframe() {
+            const wrapper = document.getElementById('liveWrapper');
+            const iframe = document.getElementById('bilibili-live-iframe');
+            if (!wrapper || !iframe) return;
+            const containerWidth = wrapper.clientWidth;
+            // 固定尺寸 1280x720
+            const baseWidth = 1280;
+            const baseHeight = 720;
+            const scale = containerWidth / baseWidth;
+            iframe.style.transform = `scale(${scale})`;
+            // 设置 iframe 尺寸为基准尺寸
+            iframe.style.width = baseWidth + 'px';
+            iframe.style.height = baseHeight + 'px';
+            // 容器高度由 padding-top 撑起，无需额外调整
+        }
+        window.addEventListener('load', scaleIframe);
+        window.addEventListener('resize', scaleIframe);
+
+        // ===== 数据加载与渲染 =====
         let allData = null;
         let currentFaction = '盟军';
+        // 预加载图片队列
+        let preloadQueue = [];
 
-        // 预加载图片
-        function preloadImages(urls) {
-            urls.forEach(url => {
+        function preloadImage(url) {
+            return new Promise((resolve) => {
                 const img = new Image();
+                img.onload = () => resolve(url);
+                img.onerror = () => resolve(url);
                 img.src = url;
             });
+        }
+
+        async function preloadAllImages(data) {
+            const urls = [];
+            // 收集礼物图标
+            for (const faction of ['盟军', '帝国']) {
+                const fData = data[faction];
+                if (!fData) continue;
+                for (const tag of ['步兵', '装甲', '远程']) {
+                    const tagData = fData[tag];
+                    if (!tagData) continue;
+                    for (const giftName in tagData) {
+                        const gift = tagData[giftName];
+                        if (gift.image) {
+                            urls.push(`礼物/${gift.image}`);
+                        }
+                        // 收集单位小图 (jpg) 和大图 (png)
+                        if (gift.units) {
+                            for (const unit of gift.units) {
+                                if (unit.images) {
+                                    for (const imgName of unit.images) {
+                                        // 小图 .jpg
+                                        const jpgUrl = `${faction}/${imgName}`;
+                                        urls.push(jpgUrl);
+                                        // 大图 .png (替换扩展名)
+                                        const pngUrl = jpgUrl.replace(/\.(jpg|jpeg|png)$/i, '.png');
+                                        if (pngUrl !== jpgUrl) {
+                                            urls.push(pngUrl);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // 去重
+            const uniqueUrls = [...new Set(urls)];
+            // 并发预加载
+            await Promise.all(uniqueUrls.map(url => preloadImage(url)));
+            console.log(`预加载完成，共 ${uniqueUrls.length} 张图片`);
         }
 
         async function loadData() {
@@ -519,31 +592,8 @@
                 const resp = await fetch('data.json');
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 allData = await resp.json();
-                // 收集所有小图（缩略图）并预加载
-                const thumbUrls = [];
-                for (const faction of ['盟军', '帝国']) {
-                    const fData = allData[faction];
-                    if (!fData) continue;
-                    for (const tag of ['步兵', '装甲', '远程']) {
-                        const tagData = fData[tag];
-                        if (!tagData) continue;
-                        for (const giftName in tagData) {
-                            const gift = tagData[giftName];
-                            if (!gift.units) continue;
-                            for (const unit of gift.units) {
-                                if (unit.images && unit.images.length > 0) {
-                                    // 取第一张作为缩略图，并确保扩展名为 .jpg
-                                    let thumb = unit.images[0];
-                                    // 替换扩展名为 .jpg（如果原图是 .png 或其他则强制改为 .jpg）
-                                    thumb = thumb.replace(/\.[^.]+$/, '.jpg');
-                                    thumbUrls.push(faction + '/' + thumb);
-                                }
-                            }
-                        }
-                    }
-                }
-                preloadImages(thumbUrls);
-
+                // 预加载所有图片
+                await preloadAllImages(allData);
                 renderFactionTabs();
                 renderFaction('盟军');
             } catch (err) {
@@ -556,14 +606,11 @@
         function renderFactionTabs() {
             const container = document.getElementById('unitsContainer');
             container.innerHTML = '';
-
             const tabsDiv = document.createElement('div');
             tabsDiv.className = 'faction-tabs';
-
             const factions = ['盟军', '帝国'];
             const icons = { '盟军': '☭', '帝国': '✙' };
             const iconClass = { '盟军': 'icon-soviet', '帝国': 'icon-nazi' };
-
             factions.forEach(f => {
                 const btn = document.createElement('button');
                 btn.className = 'faction-tab' + (f === currentFaction ? ' active' : '');
@@ -577,7 +624,6 @@
                 });
                 tabsDiv.appendChild(btn);
             });
-
             container.appendChild(tabsDiv);
             const contentWrapper = document.createElement('div');
             contentWrapper.id = 'factionContentWrapper';
@@ -587,23 +633,18 @@
         function renderFaction(faction) {
             const wrapper = document.getElementById('factionContentWrapper');
             wrapper.innerHTML = '';
-
             const factionData = allData[faction];
             if (!factionData) {
                 wrapper.innerHTML = '<div class="loading-text">该阵营暂无数据</div>';
                 return;
             }
-
             const tagOrder = ['步兵', '装甲', '远程'];
             const tagLabels = { '步兵': '步兵', '装甲': '装甲', '远程': '远程' };
-
             for (const tag of tagOrder) {
                 const tagData = factionData[tag];
                 if (!tagData || Object.keys(tagData).length === 0) continue;
-
                 const tagGroup = document.createElement('div');
                 tagGroup.className = 'tag-group';
-
                 const label = document.createElement('div');
                 label.className = 'tag-label';
                 label.innerHTML = `${tagLabels[tag]} <span class="arrow">▼</span>`;
@@ -611,92 +652,73 @@
                     tagGroup.classList.toggle('collapsed');
                 });
                 tagGroup.appendChild(label);
-
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'gift-group-wrapper';
-
-                const giftNames = Object.keys(tagData).sort((a, b) => {
-                    return (tagData[a].value || 0) - (tagData[b].value || 0);
-                });
-
+                const giftNames = Object.keys(tagData).sort((a, b) => (tagData[a].value || 0) - (tagData[b].value || 0));
                 for (const giftName of giftNames) {
                     const gift = tagData[giftName];
                     if (!gift || !gift.units || gift.units.length === 0) continue;
-
                     const giftGroup = document.createElement('div');
                     giftGroup.className = 'gift-group';
-
                     const header = document.createElement('div');
                     header.className = 'gift-header';
-
                     const icon = document.createElement('img');
                     icon.className = 'gift-icon';
                     icon.src = `礼物/${gift.image}`;
                     icon.alt = giftName;
                     icon.loading = 'lazy';
                     icon.onerror = function() { this.src = 'profile.jpg'; };
-
                     const nameSpan = document.createElement('span');
                     nameSpan.className = 'gift-name';
                     nameSpan.textContent = giftName;
-
                     const valueSpan = document.createElement('span');
                     valueSpan.className = 'gift-badge';
                     valueSpan.textContent = `🔋 ${gift.value || 0} 电池`;
-
                     const countSpan = document.createElement('span');
                     countSpan.className = 'gift-badge';
                     countSpan.textContent = `⚡出场 ×${gift.count || 1}`;
-
                     header.append(icon, nameSpan, valueSpan, countSpan);
                     giftGroup.appendChild(header);
-
                     if (gift.description) {
                         const descDiv = document.createElement('div');
                         descDiv.className = 'gift-description';
                         descDiv.textContent = gift.description;
                         giftGroup.appendChild(descDiv);
                     }
-
                     const grid = document.createElement('div');
                     grid.className = 'unit-grid';
-
                     for (const unit of gift.units) {
                         const card = createUnitCard(unit, faction);
                         grid.appendChild(card);
                     }
-
                     giftGroup.appendChild(grid);
                     wrapperDiv.appendChild(giftGroup);
                 }
-
                 tagGroup.appendChild(wrapperDiv);
                 wrapper.appendChild(tagGroup);
             }
-
             wrapper.querySelectorAll('.tag-group').forEach(g => g.classList.remove('collapsed'));
         }
 
         function createUnitCard(unit, faction) {
             const card = document.createElement('div');
             card.className = 'unit-card';
-
             const img = document.createElement('img');
             img.className = 'unit-card-img';
-            // 取第一张图，强制 .jpg 扩展名
-            let thumb = unit.images && unit.images.length > 0 ? unit.images[0] : 'profile.jpg';
-            thumb = thumb.replace(/\.[^.]+$/, '.jpg');
-            img.src = faction + '/' + thumb;
+            const firstImg = unit.images && unit.images.length > 0 ? unit.images[0] : 'profile.jpg';
+            // 强制使用 .jpg 小图
+            const jpgPath = firstImg.replace(/\.(jpg|jpeg|png)$/i, '.jpg');
+            img.src = faction + '/' + jpgPath;
             img.alt = unit.name;
             img.loading = 'lazy';
             img.onerror = function() { this.src = 'profile.jpg'; };
-
             const nameDiv = document.createElement('div');
             nameDiv.className = 'unit-card-name';
             nameDiv.textContent = unit.name;
-
             card.append(img, nameDiv);
-            card.addEventListener('click', () => openModal(unit, faction));
+            card.addEventListener('click', () => {
+                openModal(unit, faction);
+            });
             return card;
         }
 
@@ -712,16 +734,13 @@
             const video = document.getElementById('modalVideo');
 
             title.textContent = unit.name;
-
-            // 大图：使用 png 扩展名
             const imgNames = unit.images && unit.images.length > 0 ? unit.images : ['profile.jpg'];
+            // 转换为 .png 大图
             currentImages = imgNames.map(name => {
-                // 替换扩展名为 .png
-                let big = name.replace(/\.[^.]+$/, '.png');
-                return faction + '/' + big;
+                const pngName = name.replace(/\.(jpg|jpeg|png)$/i, '.png');
+                return faction + '/' + pngName;
             });
             currentIndex = 0;
-
             carouselImg.src = currentImages[0] || 'profile.jpg';
             carouselImg.alt = unit.name;
             carouselImg.onerror = function() { this.src = 'profile.jpg'; };
@@ -730,29 +749,21 @@
             if (currentImages.length > 1) {
                 const leftBtn = document.createElement('button');
                 leftBtn.textContent = '‹';
-                leftBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    changeImage(-1);
-                });
+                leftBtn.addEventListener('click', (e) => { e.stopPropagation();
+                    changeImage(-1); });
                 nav.appendChild(leftBtn);
-
                 for (let i = 0; i < currentImages.length; i++) {
                     const dot = document.createElement('button');
                     dot.className = 'dot' + (i === 0 ? ' active' : '');
                     dot.dataset.index = i;
-                    dot.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        goToImage(i);
-                    });
+                    dot.addEventListener('click', (e) => { e.stopPropagation();
+                        goToImage(i); });
                     nav.appendChild(dot);
                 }
-
                 const rightBtn = document.createElement('button');
                 rightBtn.textContent = '›';
-                rightBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    changeImage(1);
-                });
+                rightBtn.addEventListener('click', (e) => { e.stopPropagation();
+                    changeImage(1); });
                 nav.appendChild(rightBtn);
                 nav.style.display = 'flex';
             } else {
@@ -760,14 +771,11 @@
             }
 
             desc.textContent = unit.description || '暂无介绍。';
-
             const videoSrc = unit.video ? '视频/' + unit.video : '';
             if (videoSrc) {
                 video.style.display = 'block';
                 const source = video.querySelector('source');
-                if (source) {
-                    source.src = videoSrc;
-                } else {
+                if (source) { source.src = videoSrc; } else {
                     const newSource = document.createElement('source');
                     newSource.src = videoSrc;
                     newSource.type = 'video/mp4';
@@ -777,7 +785,6 @@
             } else {
                 video.style.display = 'none';
             }
-
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -825,11 +832,7 @@
         });
 
         loadData();
-
-        document.getElementById('avatarImg').onerror = function() {
-            this.src = 'profile.jpg';
-        };
+        document.getElementById('avatarImg').onerror = function() { this.src = 'profile.jpg'; };
     </script>
-
 </body>
 </html>

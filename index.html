@@ -569,8 +569,10 @@
             }
         }
 
-        window.addEventListener('load', resizeIframe);
-        window.addEventListener('resize', resizeIframe);
+		window.onload = resizeIframe;
+		window.onresize = resizeIframe;
+        // window.addEventListener('load', resizeIframe);
+        // window.addEventListener('resize', resizeIframe);
 
         // ============================================================
         //  加载 data.json

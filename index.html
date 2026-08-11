@@ -101,34 +101,14 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
             border: 1px solid #26313e;
             position: relative;
-            aspect-ratio: 16 / 9;
-            max-height: 75vh;
             width: 100%;
         }
         .live-section iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
             display: block;
-        }
-        @media (max-width: 640px) {
-            .live-section {
-                aspect-ratio: 16 / 9;
-                max-height: 50vh;
-                border-radius: 10px;
-            }
-            .site-title {
-                font-size: 1.2rem;
-            }
-            .header-right {
-                font-size: 0.8rem;
-                padding: 4px 12px;
-                white-space: normal;
-            }
-            .avatar {
-                width: 40px;
-                height: 40px;
-            }
+            border: none;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9; /* 备用 */
         }
 
         /* ===== 单位展示区 ===== */
@@ -136,9 +116,10 @@
             margin-top: 10px;
         }
 
-        /* 阵营选项卡 */
+        /* 阵营选项卡 - 两端对齐 */
         .faction-tabs {
             display: flex;
+            justify-content: space-between;
             gap: 12px;
             margin-bottom: 24px;
             border-bottom: 1px solid #2a313c;
@@ -319,30 +300,13 @@
             border-bottom: 1px solid #25303e;
         }
         .unit-card-name {
-            padding: 8px 10px 4px;
+            padding: 8px 10px 8px;
             font-weight: 600;
             font-size: 0.92rem;
             text-align: center;
             color: #dce4ef;
             background: #0f1822;
             letter-spacing: 0.3px;
-        }
-        .unit-card-meta {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 0 8px 8px;
-            font-size: 0.7rem;
-            color: #8ea5bf;
-            background: #0f1822;
-            border-top: 1px solid #1f2b38;
-            flex-wrap: wrap;
-        }
-        .unit-card-meta span {
-            background: #1c2837;
-            padding: 1px 10px;
-            border-radius: 30px;
-            border: 1px solid #2e3d4f;
         }
 
         /* ===== 模态弹窗 ===== */
@@ -484,20 +448,7 @@
             margin: 10px 0 14px;
             border-left: 3px solid #e8b84a;
         }
-        .modal-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px 20px;
-            font-size: 0.88rem;
-            color: #a6bacf;
-            margin-bottom: 12px;
-        }
-        .modal-meta span {
-            background: #1b2838;
-            padding: 2px 14px;
-            border-radius: 30px;
-            border: 1px solid #314252;
-        }
+
         .modal-video {
             border-radius: 10px;
             overflow: hidden;
@@ -567,11 +518,12 @@
 
         <!-- 直播窗口 -->
         <div class="live-section">
-            <iframe
-            src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=1987060053"
-            allowfullscreen
-            loading="lazy"
-            title="B站直播间"
+            <iframe id="bilibili-live-iframe"
+                src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=1987060053"
+                allowfullscreen
+                loading="lazy"
+                title="B站直播间"
+                style="width:100%; aspect-ratio:16/9; border:none; display:block;"
             ></iframe>
         </div>
 
@@ -590,7 +542,7 @@
                 <img id="modalCarouselImg" src="" alt="单位图片">
                 <div class="carousel-nav" id="carouselNav"></div>
             </div>
-            <div class="modal-meta" id="modalMeta"></div>
+            <!-- 移除了 modal-meta -->
             <div class="modal-description" id="modalDesc">介绍文字</div>
             <div class="modal-video">
                 <video id="modalVideo" controls preload="metadata" playsinline>
@@ -603,7 +555,25 @@
 
     <script>
         // ============================================================
-        //  1. 加载 data.json
+        //  直播窗口自适应 (iframe)
+        // ============================================================
+        function resizeIframe() {
+            var iframe = document.getElementById('bilibili-live-iframe');
+            if (!iframe) return;
+            // 使用父容器宽度，保持16:9
+            var container = iframe.parentElement;
+            var width = container.clientWidth;
+            if (width > 0) {
+                iframe.style.width = width + 'px';
+                iframe.style.height = (width * 9 / 16) + 'px';
+            }
+        }
+
+        window.addEventListener('load', resizeIframe);
+        window.addEventListener('resize', resizeIframe);
+
+        // ============================================================
+        //  加载 data.json
         // ============================================================
         let allData = null;
         let currentFaction = '盟军';
@@ -623,7 +593,7 @@
         }
 
         // ============================================================
-        //  2. 渲染阵营选项卡
+        //  渲染阵营选项卡 (两端对齐)
         // ============================================================
         function renderFactionTabs() {
             const container = document.getElementById('unitsContainer');
@@ -635,13 +605,14 @@
             const factions = ['盟军', '帝国'];
             const icons = {
                 '盟军': '☭',
-                '帝国': '🇩🇪'
+                '帝国': '✙'
             };
             const iconClass = {
                 '盟军': 'icon-soviet',
                 '帝国': 'icon-nazi'
             };
 
+            // 先创建两个按钮，分别添加
             factions.forEach(f => {
                 const btn = document.createElement('button');
                 btn.className = 'faction-tab' + (f === currentFaction ? ' active' : '');
@@ -664,7 +635,7 @@
         }
 
         // ============================================================
-        //  3. 渲染指定阵营
+        //  渲染指定阵营
         // ============================================================
         function renderFaction(faction) {
             const wrapper = document.getElementById('factionContentWrapper');
@@ -718,8 +689,6 @@
 
                     const icon = document.createElement('img');
                     icon.className = 'gift-icon';
-                    // 礼物图片路径：礼物名.png（已在 data.json 中只写文件名，但实际需要加路径）
-                    // 由于我们约定所有礼物图片放在 礼物/ 目录，所以拼接路径
                     const giftImagePath = `礼物/${gift.image}`;
                     icon.src = giftImagePath;
                     icon.alt = giftName;
@@ -732,11 +701,11 @@
 
                     const valueSpan = document.createElement('span');
                     valueSpan.className = 'gift-value';
-                    valueSpan.textContent = `⚡ ${gift.value || 0} 电池`;
+                    valueSpan.textContent = `🔋 ${gift.value || 0} 电池`;
 
                     const countSpan = document.createElement('span');
                     countSpan.className = 'gift-count';
-                    countSpan.textContent = `出场 ×${gift.count || 1}`;
+                    countSpan.textContent = `⚡ 出场 ×${gift.count || 1}`;
 
                     header.append(icon, nameSpan, valueSpan, countSpan);
                     giftGroup.appendChild(header);
@@ -754,7 +723,7 @@
                     grid.className = 'unit-grid';
 
                     for (const unit of gift.units) {
-                        const card = createUnitCard(unit, faction, giftName, gift.value, gift.count);
+                        const card = createUnitCard(unit, faction);
                         grid.appendChild(card);
                     }
 
@@ -770,9 +739,9 @@
         }
 
         // ============================================================
-        //  4. 创建单位卡片
+        //  创建单位卡片 (不再显示价值和出场)
         // ============================================================
-        function createUnitCard(unit, faction, giftName, giftValue, giftCount) {
+        function createUnitCard(unit, faction) {
             const card = document.createElement('div');
             card.className = 'unit-card';
 
@@ -788,35 +757,29 @@
             nameDiv.className = 'unit-card-name';
             nameDiv.textContent = unit.name;
 
-            const meta = document.createElement('div');
-            meta.className = 'unit-card-meta';
-            const valSpan = document.createElement('span');
-            valSpan.textContent = `⚡ ${giftValue || 0}`;
-            const cntSpan = document.createElement('span');
-            cntSpan.textContent = `×${giftCount || 1}`;
-            meta.append(valSpan, cntSpan);
+            // 不再添加 meta 信息
 
-            card.append(img, nameDiv, meta);
+            card.append(img, nameDiv);
 
             card.addEventListener('click', () => {
-                openModal(unit, faction, giftName, giftValue, giftCount);
+                // 打开模态，但不传递价值和出场
+                openModal(unit, faction);
             });
 
             return card;
         }
 
         // ============================================================
-        //  5. 模态弹窗
+        //  模态弹窗 (移除 meta)
         // ============================================================
         let currentImages = [];
         let currentIndex = 0;
 
-        function openModal(unit, faction, giftName, giftValue, giftCount) {
+        function openModal(unit, faction) {
             const overlay = document.getElementById('modalOverlay');
             const title = document.getElementById('modalTitle');
             const carouselImg = document.getElementById('modalCarouselImg');
             const nav = document.getElementById('carouselNav');
-            const meta = document.getElementById('modalMeta');
             const desc = document.getElementById('modalDesc');
             const video = document.getElementById('modalVideo');
 
@@ -863,13 +826,7 @@
                 nav.style.display = 'none';
             }
 
-            meta.innerHTML = `
-                <span>标签: ${unit.tag || '未分类'}</span>
-                <span>礼物: ${giftName}</span>
-                <span>价值: ${giftValue || 0} 电池</span>
-                <span>出场: ×${giftCount || 1}</span>
-            `;
-
+            // 不再显示 modal-meta
             desc.textContent = unit.description || '暂无介绍。';
 
             const videoSrc = unit.video ? '视频/' + unit.video : '';
@@ -937,7 +894,7 @@
         });
 
         // ============================================================
-        //  6. 启动
+        //  启动
         // ============================================================
         loadData();
 

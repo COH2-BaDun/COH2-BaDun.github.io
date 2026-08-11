@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>巴顿英雄连2弹幕游戏</title>
+    <title>巴顿弹幕英雄连2</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         /* ===== 全局重置 & 基础 ===== */
@@ -100,15 +100,12 @@
             background: #131b24;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
             border: 1px solid #26313e;
-            position: relative;
             width: 100%;
+            /* 高度由JS控制 */;
         }
         .live-section iframe {
             display: block;
             border: none;
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9; /* 备用 */
         }
 
         /* ===== 单位展示区 ===== */
@@ -116,11 +113,10 @@
             margin-top: 10px;
         }
 
-        /* 阵营选项卡 - 两端对齐 */
+        /* 阵营选项卡 - 左右对齐 */
         .faction-tabs {
             display: flex;
             justify-content: space-between;
-            gap: 12px;
             margin-bottom: 24px;
             border-bottom: 1px solid #2a313c;
             padding-bottom: 8px;
@@ -218,7 +214,7 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px 16px;
+            gap: 6px 12px;
             margin-bottom: 6px;
             padding-bottom: 6px;
             border-bottom: 1px solid #1f2b38;
@@ -237,18 +233,14 @@
             font-size: 1.0rem;
             color: #f0e6c5;
         }
-        .gift-value {
+        .gift-badge {
             background: #1f2b39;
-            padding: 2px 14px;
+            padding: 2px 12px;
             border-radius: 30px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: #b8cbdf;
             border: 1px solid #324252;
-        }
-        .gift-count {
-            color: #8ea9c7;
-            font-size: 0.85rem;
-            margin-left: auto;
+            white-space: nowrap;
         }
 
         /* 礼物描述 */
@@ -276,7 +268,7 @@
             }
         }
 
-        /* 单个单位卡片 */
+        /* 单个单位卡片 - 移除meta */
         .unit-card {
             background: #17212b;
             border-radius: 10px;
@@ -448,7 +440,7 @@
             margin: 10px 0 14px;
             border-left: 3px solid #e8b84a;
         }
-
+        /* 删除 modal-meta 样式 */
         .modal-video {
             border-radius: 10px;
             overflow: hidden;
@@ -487,17 +479,6 @@
             color: #7a8fa8;
             font-size: 0.85rem;
         }
-        .mt-2 {
-            margin-top: 8px;
-        }
-        .mb-1 {
-            margin-bottom: 4px;
-        }
-        .flex-center {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
     </style>
 </head>
 <body>
@@ -507,24 +488,22 @@
         <header class="header">
             <div class="header-left">
                 <img src="profile.jpg" alt="avatar" class="avatar" id="avatarImg">
-                <span class="site-title">巴顿英雄连2弹幕游戏</span>
+                <span class="site-title">巴顿弹幕英雄连2</span>
             </div>
             <div class="header-right">
                 <a href="https://live.bilibili.com/1987060053" target="_blank" rel="noopener">
-                    直播间 &gt;
+                    直播 &gt;
                 </a>
             </div>
         </header>
 
         <!-- 直播窗口 -->
-        <div class="live-section">
+        <div class="live-section" id="liveSection">
             <iframe id="bilibili-live-iframe"
                 src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=1987060053"
-                allowfullscreen
-                loading="lazy"
-                title="B站直播间"
-                style="width:100%; aspect-ratio:16/9; border:none; display:block;"
-            ></iframe>
+                frameborder="no" framespacing="0" scrolling="no"
+                allow="autoplay; encrypted-media" allowfullscreen="true">
+            </iframe>
         </div>
 
         <!-- 单位展示 -->
@@ -542,7 +521,7 @@
                 <img id="modalCarouselImg" src="" alt="单位图片">
                 <div class="carousel-nav" id="carouselNav"></div>
             </div>
-            <!-- 移除了 modal-meta -->
+            <!-- 模态元信息已删除 -->
             <div class="modal-description" id="modalDesc">介绍文字</div>
             <div class="modal-video">
                 <video id="modalVideo" controls preload="metadata" playsinline>
@@ -555,24 +534,20 @@
 
     <script>
         // ============================================================
-        //  直播窗口自适应 (iframe)
+        //  直播 iframe 自适应
         // ============================================================
         function resizeIframe() {
             var iframe = document.getElementById('bilibili-live-iframe');
-            if (!iframe) return;
-            // 使用父容器宽度，保持16:9
-            var container = iframe.parentElement;
+            var container = document.getElementById('liveSection');
+            if (!iframe || !container) return;
+            // 获取容器宽度（减去可能的padding）
             var width = container.clientWidth;
-            if (width > 0) {
-                iframe.style.width = width + 'px';
-                iframe.style.height = (width * 9 / 16) + 'px';
-            }
+            var height = width * 9 / 16; // 16:9
+            iframe.width = width;
+            iframe.height = height;
         }
-
-		window.onload = resizeIframe;
-		window.onresize = resizeIframe;
-        // window.addEventListener('load', resizeIframe);
-        // window.addEventListener('resize', resizeIframe);
+        window.addEventListener('load', resizeIframe);
+        window.addEventListener('resize', resizeIframe);
 
         // ============================================================
         //  加载 data.json
@@ -595,7 +570,7 @@
         }
 
         // ============================================================
-        //  渲染阵营选项卡 (两端对齐)
+        //  渲染阵营选项卡
         // ============================================================
         function renderFactionTabs() {
             const container = document.getElementById('unitsContainer');
@@ -614,7 +589,6 @@
                 '帝国': 'icon-nazi'
             };
 
-            // 先创建两个按钮，分别添加
             factions.forEach(f => {
                 const btn = document.createElement('button');
                 btn.className = 'faction-tab' + (f === currentFaction ? ' active' : '');
@@ -702,12 +676,12 @@
                     nameSpan.textContent = giftName;
 
                     const valueSpan = document.createElement('span');
-                    valueSpan.className = 'gift-value';
+                    valueSpan.className = 'gift-badge';
                     valueSpan.textContent = `🔋 ${gift.value || 0} 电池`;
 
                     const countSpan = document.createElement('span');
-                    countSpan.className = 'gift-count';
-                    countSpan.textContent = `⚡ 出场 ×${gift.count || 1}`;
+                    countSpan.className = 'gift-badge';
+                    countSpan.textContent = `⚡出场 ×${gift.count || 1}`;
 
                     header.append(icon, nameSpan, valueSpan, countSpan);
                     giftGroup.appendChild(header);
@@ -741,7 +715,7 @@
         }
 
         // ============================================================
-        //  创建单位卡片 (不再显示价值和出场)
+        //  创建单位卡片（无meta）
         // ============================================================
         function createUnitCard(unit, faction) {
             const card = document.createElement('div');
@@ -759,12 +733,9 @@
             nameDiv.className = 'unit-card-name';
             nameDiv.textContent = unit.name;
 
-            // 不再添加 meta 信息
-
             card.append(img, nameDiv);
 
             card.addEventListener('click', () => {
-                // 打开模态，但不传递价值和出场
                 openModal(unit, faction);
             });
 
@@ -772,7 +743,7 @@
         }
 
         // ============================================================
-        //  模态弹窗 (移除 meta)
+        //  模态弹窗（无meta）
         // ============================================================
         let currentImages = [];
         let currentIndex = 0;
@@ -828,7 +799,6 @@
                 nav.style.display = 'none';
             }
 
-            // 不再显示 modal-meta
             desc.textContent = unit.description || '暂无介绍。';
 
             const videoSrc = unit.video ? '视频/' + unit.video : '';

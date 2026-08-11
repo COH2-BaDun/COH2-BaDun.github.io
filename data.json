@@ -3,61 +3,61 @@
     "步兵": {
       "小花花": {
         "value": 1,
-        "image": "礼物/小花花.jpg",
+        "image": "礼物/小花花.png",
         "count": 1,
         "units": [
           {
             "name": "冲锋兵",
-            "images": ["冲锋兵.jpg", "冲锋兵2.jpg", "冲锋兵3.jpg"],
+            "images": ["冲锋兵.png", "冲锋兵2.png", "冲锋兵3.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "盟军基础步兵，擅长近距离突击，装备汤普森冲锋枪，行动迅速，适合渗透和压制敌方据点。"
           },
           {
             "name": "火箭筒兵",
-            "images": ["火箭筒兵.jpg"],
+            "images": ["火箭筒兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "携带M1反坦克火箭筒，能有效摧毁敌方轻型装甲和工事，但装填较慢，需要掩护。"
           },
           {
             "name": "机枪兵",
-            "images": ["机枪兵.jpg", "机枪兵2.jpg", "机枪兵3.jpg"],
+            "images": ["机枪兵.png", "机枪兵2.png", "机枪兵3.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "装备勃朗宁轻机枪，提供持续火力压制，适合防守阵地或掩护队友推进。"
           },
           {
             "name": "狙击兵",
-            "images": ["狙击兵.jpg", "狙击兵2.jpg"],
+            "images": ["狙击兵.png", "狙击兵2.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "配备高精度狙击步枪，可远距离消灭敌方关键目标，但生存能力较弱，需善用隐蔽。"
           },
           {
             "name": "喷火兵",
-            "images": ["喷火兵.jpg"],
+            "images": ["喷火兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "使用M2火焰喷射器，对建筑和步兵有毁灭性效果，但射程短且自身脆弱。"
           },
           {
             "name": "手枪军官",
-            "images": ["手枪军官.jpg"],
+            "images": ["手枪军官.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "指挥型单位，装备手枪，可提升周围友军士气，提供战术加成。"
           },
           {
             "name": "掷弹筒兵",
-            "images": ["掷弹筒兵.jpg"],
+            "images": ["掷弹筒兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "携带M2迫击炮，可远程轰炸敌方阵地，对集群目标效果显著。"
           },
           {
             "name": "重机枪兵",
-            "images": ["重机枪兵.jpg"],
+            "images": ["重机枪兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "操作M2HB重机枪，提供极致火力压制，能摧毁轻型载具，但机动性差。"
@@ -66,12 +66,12 @@
       },
       "你真好看": {
         "value": 10,
-        "image": "礼物/你真好看.jpg",
+        "image": "礼物/你真好看.png",
         "count": 1,
         "units": [
           {
             "name": "冲锋兵",
-            "images": ["冲锋兵.jpg", "冲锋兵2.jpg", "冲锋兵3.jpg"],
+            "images": ["冲锋兵.png", "冲锋兵2.png", "冲锋兵3.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "盟军基础步兵，擅长近距离突击，装备汤普森冲锋枪，行动迅速，适合渗透和压制敌方据点。"
@@ -82,19 +82,19 @@
     "装甲": {
       "棒棒糖": {
         "value": 50,
-        "image": "礼物/棒棒糖.jpg",
+        "image": "礼物/棒棒糖.png",
         "count": 2,
         "units": [
           {
             "name": "步战车",
-            "images": ["步战车.jpg"],
+            "images": ["步战车.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "M3半履带车，可快速部署步兵，装备轻机枪，提供机动火力支援。"
           },
           {
             "name": "装甲车",
-            "images": ["装甲车.jpg"],
+            "images": ["装甲车.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "M8灰狗装甲车，高机动性，配备37毫米炮，适合侦察和打击轻装甲目标。"
@@ -103,19 +103,19 @@
       },
       "千纸鹤": {
         "value": 52,
-        "image": "礼物/千纸鹤.jpg",
+        "image": "礼物/千纸鹤.png",
         "count": 2,
         "units": [
           {
             "name": "轻型坦克",
-            "images": ["轻型坦克.jpg"],
+            "images": ["轻型坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "斯图亚特轻型坦克，机动灵活，适用于早期突破和迂回作战。"
           },
           {
             "name": "喷火坦克",
-            "images": ["喷火坦克.jpg"],
+            "images": ["喷火坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "M4谢尔曼改装的喷火坦克，能喷射烈焰，对步兵和防御工事极具威胁。"
@@ -124,19 +124,19 @@
       },
       "喜欢你": {
         "value": 99,
-        "image": "礼物/喜欢你.jpg",
+        "image": "礼物/喜欢你.png",
         "count": 2,
         "units": [
           {
             "name": "中型坦克",
-            "images": ["中型坦克.jpg"],
+            "images": ["中型坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "M4谢尔曼中型坦克，均衡的火力、装甲和机动性，是盟军装甲主力。"
           },
           {
             "name": "重型坦克",
-            "images": ["重型坦克.jpg"],
+            "images": ["重型坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "M26潘兴重型坦克，厚重的装甲和强大的90毫米炮，能对抗德军重型装甲。"
@@ -145,12 +145,12 @@
       },
       "做我的小猫": {
         "value": 99,
-        "image": "礼物/做我的小猫.jpg",
+        "image": "礼物/做我的小猫.png",
         "count": 2,
         "units": [
           {
             "name": "超级坦克",
-            "images": ["超级坦克.jpg"],
+            "images": ["超级坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "T28超级重型坦克（概念），拥有超厚装甲和强大火力，用于突破坚固防线。"
@@ -161,12 +161,12 @@
     "远程": {
       "音乐盒": {
         "value": 99,
-        "image": "礼物/音乐盒.jpg",
+        "image": "礼物/音乐盒.png",
         "count": 1,
         "units": [
           {
             "name": "管风琴",
-            "images": ["管风琴.jpg"],
+            "images": ["管风琴.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "M4谢尔曼管风琴火箭发射车，可发射多枚火箭弹，对大面积目标实施压制。"
@@ -175,12 +175,12 @@
       },
       "钻石戒指": {
         "value": 199,
-        "image": "礼物/钻石戒指.jpg",
+        "image": "礼物/钻石戒指.png",
         "count": 1,
         "units": [
           {
             "name": "喀秋莎",
-            "images": ["喀秋莎.jpg"],
+            "images": ["喀秋莎.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "BM-13喀秋莎火箭炮，苏联援助盟军，能快速倾泻大量火箭弹，造成毁灭性打击。"
@@ -189,19 +189,19 @@
       },
       "花式夸夸": {
         "value": 299,
-        "image": "礼物/花式夸夸.jpg",
+        "image": "礼物/花式夸夸.png",
         "count": 2,
         "units": [
           {
             "name": "斯图卡",
-            "images": ["斯图卡.jpg"],
+            "images": ["斯图卡.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "Ju-87斯图卡俯冲轰炸机，可精确投弹，对装甲和据点造成高额伤害。"
           },
           {
             "name": "灰熊",
-            "images": ["灰熊.jpg"],
+            "images": ["灰熊.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "灰熊突击炮（德军缴获改装），装备重型榴弹炮，用于支援步兵进攻。"
@@ -210,19 +210,19 @@
       },
       "灿烂烟花": {
         "value": 520,
-        "image": "礼物/灿烂烟花.jpg",
+        "image": "礼物/灿烂烟花.png",
         "count": 3,
         "units": [
           {
             "name": "榴弹炮",
-            "images": ["榴弹炮.jpg"],
+            "images": ["榴弹炮.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "M1 155毫米榴弹炮，远程火力支援，能覆盖大片区域，摧毁工事和集群目标。"
           },
           {
             "name": "航空编队",
-            "images": ["航空编队.jpg"],
+            "images": ["航空编队.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "P-51野马战斗机编队，提供空中支援，对地面目标实施扫射和轰炸。"
@@ -231,12 +231,12 @@
       },
       "急速超跑": {
         "value": 1000,
-        "image": "礼物/急速超跑.jpg",
+        "image": "礼物/急速超跑.png",
         "count": 1,
         "units": [
           {
             "name": "航空编队",
-            "images": ["航空编队.jpg"],
+            "images": ["航空编队.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "P-51野马战斗机编队，提供空中支援，对地面目标实施扫射和轰炸。"
@@ -249,61 +249,61 @@
     "步兵": {
       "人气票": {
         "value": 1,
-        "image": "礼物/人气票.jpg",
+        "image": "礼物/人气票.png",
         "count": 1,
         "units": [
           {
             "name": "冲锋兵",
-            "images": ["冲锋兵.jpg", "冲锋兵2.jpg", "冲锋兵3.jpg"],
+            "images": ["冲锋兵.png", "冲锋兵2.png", "冲锋兵3.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "德军精锐突击兵，装备MP40冲锋枪，擅长巷战和近距离交火。"
           },
           {
             "name": "火箭筒兵",
-            "images": ["火箭筒兵.jpg"],
+            "images": ["火箭筒兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "携带Panzerschreck反坦克火箭筒，能有效击穿盟军中型坦克装甲。"
           },
           {
             "name": "机枪兵",
-            "images": ["机枪兵.jpg", "机枪兵2.jpg", "机枪兵3.jpg"],
+            "images": ["机枪兵.png", "机枪兵2.png", "机枪兵3.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "装备MG42通用机枪，射速极快，是阵地防御和火力压制的中坚力量。"
           },
           {
             "name": "狙击兵",
-            "images": ["狙击兵.jpg", "狙击兵2.jpg"],
+            "images": ["狙击兵.png", "狙击兵2.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "Kar98k狙击步枪，射程远、精度高，能有效清除敌方军官和机枪手。"
           },
           {
             "name": "喷火兵",
-            "images": ["喷火兵.jpg"],
+            "images": ["喷火兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "Flammenwerfer 35火焰喷射器，对建筑和步兵有极强杀伤力，但易被集火。"
           },
           {
             "name": "手枪军官",
-            "images": ["手枪军官.jpg"],
+            "images": ["手枪军官.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "德军军官，装备P38手枪，可提供指挥加成，提升单位士气。"
           },
           {
             "name": "掷弹筒兵",
-            "images": ["掷弹筒兵.jpg"],
+            "images": ["掷弹筒兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "携带GrW 34迫击炮，可曲射打击掩体后的敌人，适合支援进攻。"
           },
           {
             "name": "重机枪兵",
-            "images": ["重机枪兵.jpg"],
+            "images": ["重机枪兵.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "MG34重机枪班，提供持续火力，对步兵和轻型车辆威胁巨大。"
@@ -312,12 +312,12 @@
       },
       "比心": {
         "value": 10,
-        "image": "礼物/比心.jpg",
+        "image": "礼物/比心.png",
         "count": 1,
         "units": [
           {
             "name": "冲锋兵",
-            "images": ["冲锋兵.jpg", "冲锋兵2.jpg", "冲锋兵3.jpg"],
+            "images": ["冲锋兵.png", "冲锋兵2.png", "冲锋兵3.png"],
             "video": "测试.mp4",
             "tag": "步兵",
             "description": "德军精锐突击兵，装备MP40冲锋枪，擅长巷战和近距离交火。"
@@ -328,19 +328,19 @@
     "装甲": {
       "心动时刻": {
         "value": 50,
-        "image": "礼物/心动时刻.jpg",
+        "image": "礼物/心动时刻.png",
         "count": 2,
         "units": [
           {
             "name": "步战车",
-            "images": ["步战车.jpg"],
+            "images": ["步战车.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "Sd.Kfz. 251半履带装甲车，可输送步兵，并搭载机枪提供火力支援。"
           },
           {
             "name": "装甲车",
-            "images": ["装甲车.jpg"],
+            "images": ["装甲车.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "Sd.Kfz. 222轻型装甲侦察车，高机动性，装备20毫米机炮，适合早期侦察。"
@@ -349,19 +349,19 @@
       },
       "情书": {
         "value": 52,
-        "image": "礼物/情书.jpg",
+        "image": "礼物/情书.png",
         "count": 2,
         "units": [
           {
             "name": "轻型坦克",
-            "images": ["轻型坦克.jpg"],
+            "images": ["轻型坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "Panzer II轻型坦克，机动灵活，用于早期突破和侦察任务。"
           },
           {
             "name": "喷火坦克",
-            "images": ["喷火坦克.jpg"],
+            "images": ["喷火坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "Panzer III改装喷火坦克，可喷射火焰，对防御工事和步兵效果显著。"
@@ -370,19 +370,19 @@
       },
       "捏捏小脸": {
         "value": 99,
-        "image": "礼物/捏捏小脸.jpg",
+        "image": "礼物/捏捏小脸.png",
         "count": 2,
         "units": [
           {
             "name": "中型坦克",
-            "images": ["中型坦克.jpg"],
+            "images": ["中型坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "Panzer IV中型坦克，德军装甲主力，配备75毫米长身管炮，火力均衡。"
           },
           {
             "name": "重型坦克",
-            "images": ["重型坦克.jpg"],
+            "images": ["重型坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "虎式重型坦克，厚重装甲和88毫米炮，是盟军坦克的噩梦。"
@@ -391,12 +391,12 @@
       },
       "水晶鞋": {
         "value": 99,
-        "image": "礼物/水晶鞋.jpg",
+        "image": "礼物/水晶鞋.png",
         "count": 2,
         "units": [
           {
             "name": "超级坦克",
-            "images": ["超级坦克.jpg"],
+            "images": ["超级坦克.png"],
             "video": "测试.mp4",
             "tag": "装甲",
             "description": "鼠式超重型坦克（概念），拥有无与伦比的装甲和火力，但机动极差。"
@@ -407,12 +407,12 @@
     "远程": {
       "撒花": {
         "value": 99,
-        "image": "礼物/撒花.jpg",
+        "image": "礼物/撒花.png",
         "count": 1,
         "units": [
           {
             "name": "管风琴",
-            "images": ["管风琴.jpg"],
+            "images": ["管风琴.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "Panzerwerfer 42火箭发射车，可发射多管火箭弹，对大面积目标实施压制。"
@@ -421,12 +421,12 @@
       },
       "告白花束": {
         "value": 199,
-        "image": "礼物/告白花束.jpg",
+        "image": "礼物/告白花束.png",
         "count": 1,
         "units": [
           {
             "name": "喀秋莎",
-            "images": ["喀秋莎.jpg"],
+            "images": ["喀秋莎.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "BM-13喀秋莎（缴获/仿制），可快速倾泻火箭弹，造成大范围破坏。"
@@ -435,19 +435,19 @@
       },
       "流星雨": {
         "value": 299,
-        "image": "礼物/流星雨.jpg",
+        "image": "礼物/流星雨.png",
         "count": 2,
         "units": [
           {
             "name": "斯图卡",
-            "images": ["斯图卡.jpg"],
+            "images": ["斯图卡.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "Ju-87斯图卡俯冲轰炸机，配备空袭警报器，对地精确打击。"
           },
           {
             "name": "灰熊",
-            "images": ["灰熊.jpg"],
+            "images": ["灰熊.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "灰熊突击炮（德军），装备150毫米重型榴弹炮，用于步兵支援。"
@@ -456,19 +456,19 @@
       },
       "旋转木马": {
         "value": 520,
-        "image": "礼物/旋转木马.jpg",
+        "image": "礼物/旋转木马.png",
         "count": 3,
         "units": [
           {
             "name": "榴弹炮",
-            "images": ["榴弹炮.jpg"],
+            "images": ["榴弹炮.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "sFH 18 150毫米榴弹炮，德军标准远程火炮，射程远，威力大。"
           },
           {
             "name": "航空编队",
-            "images": ["航空编队.jpg"],
+            "images": ["航空编队.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "Bf-109战斗机编队，提供制空权和对地扫射支援。"
@@ -477,12 +477,12 @@
       },
       "私人飞机": {
         "value": 1000,
-        "image": "礼物/私人飞机.jpg",
+        "image": "礼物/私人飞机.png",
         "count": 1,
         "units": [
           {
             "name": "航空编队",
-            "images": ["航空编队.jpg"],
+            "images": ["航空编队.png"],
             "video": "测试.mp4",
             "tag": "远程",
             "description": "Bf-109战斗机编队，提供制空权和对地扫射支援。"

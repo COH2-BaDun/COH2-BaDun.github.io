@@ -238,7 +238,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px 16px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             padding-bottom: 6px;
             border-bottom: 1px solid #1f2b38;
         }
@@ -268,6 +268,18 @@
             color: #8ea9c7;
             font-size: 0.85rem;
             margin-left: auto;
+        }
+
+        /* 礼物描述 */
+        .gift-description {
+            font-size: 0.82rem;
+            color: #a0b8cf;
+            background: #0d1822;
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin: 6px 0 10px 0;
+            border-left: 3px solid #4a6a8a;
+            line-height: 1.6;
         }
 
         /* 单位卡片网格 */
@@ -700,13 +712,15 @@
                     const giftGroup = document.createElement('div');
                     giftGroup.className = 'gift-group';
 
+                    // 礼物头部
                     const header = document.createElement('div');
                     header.className = 'gift-header';
 
                     const icon = document.createElement('img');
                     icon.className = 'gift-icon';
-                    // 修改为扁平路径：礼物/礼物名.jpg
-                    const giftImagePath = `礼物/${giftName}.jpg`;
+                    // 礼物图片路径：礼物名.png（已在 data.json 中只写文件名，但实际需要加路径）
+                    // 由于我们约定所有礼物图片放在 礼物/ 目录，所以拼接路径
+                    const giftImagePath = `礼物/${gift.image}`;
                     icon.src = giftImagePath;
                     icon.alt = giftName;
                     icon.loading = 'lazy';
@@ -727,6 +741,15 @@
                     header.append(icon, nameSpan, valueSpan, countSpan);
                     giftGroup.appendChild(header);
 
+                    // 礼物描述
+                    if (gift.description) {
+                        const descDiv = document.createElement('div');
+                        descDiv.className = 'gift-description';
+                        descDiv.textContent = gift.description;
+                        giftGroup.appendChild(descDiv);
+                    }
+
+                    // 单位网格
                     const grid = document.createElement('div');
                     grid.className = 'unit-grid';
 

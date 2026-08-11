@@ -6,7 +6,6 @@
     <title>巴顿弹幕英雄连2</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* ===== 全局重置 & 基础 ===== */
         *,
         *::before,
         *::after {
@@ -33,14 +32,12 @@
             max-width: 100%;
         }
 
-        /* ===== 容器 ===== */
         .app {
             max-width: 1300px;
             margin: 0 auto;
             padding: 12px 16px 40px;
         }
 
-        /* ===== 头部 ===== */
         .header {
             display: flex;
             align-items: center;
@@ -92,28 +89,31 @@
             text-decoration: none;
         }
 
-        /* ===== 直播窗口 ===== */
+        /* 直播窗口 - 纯CSS自适应 */
         .live-section {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
             margin-bottom: 28px;
             border-radius: 14px;
             overflow: hidden;
             background: #131b24;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
             border: 1px solid #26313e;
-            width: 100%;
-            /* 高度由JS控制 */;
         }
         .live-section iframe {
-            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
         }
 
-        /* ===== 单位展示区 ===== */
         .units-section {
             margin-top: 10px;
         }
 
-        /* 阵营选项卡 - 左右对齐 */
         .faction-tabs {
             display: flex;
             justify-content: space-between;
@@ -149,15 +149,6 @@
             color: #b0b0b0;
         }
 
-        /* 阵营内容容器 */
-        .faction-content {
-            display: none;
-        }
-        .faction-content.active {
-            display: block;
-        }
-
-        /* 标签折叠 */
         .tag-group {
             margin-bottom: 20px;
             border: 1px solid #26313e;
@@ -198,7 +189,6 @@
             padding: 12px 16px 16px;
         }
 
-        /* 礼物分组 */
         .gift-group {
             background: #0f1822;
             border-radius: 10px;
@@ -242,8 +232,6 @@
             border: 1px solid #324252;
             white-space: nowrap;
         }
-
-        /* 礼物描述 */
         .gift-description {
             font-size: 0.82rem;
             color: #a0b8cf;
@@ -255,7 +243,6 @@
             line-height: 1.6;
         }
 
-        /* 单位卡片网格 */
         .unit-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -268,7 +255,6 @@
             }
         }
 
-        /* 单个单位卡片 - 移除meta */
         .unit-card {
             background: #17212b;
             border-radius: 10px;
@@ -301,7 +287,7 @@
             letter-spacing: 0.3px;
         }
 
-        /* ===== 模态弹窗 ===== */
+        /* 模态框 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -429,7 +415,6 @@
             background: #ffd966;
             transform: scale(1.2);
         }
-
         .modal-description {
             font-size: 0.98rem;
             color: #c6d4e3;
@@ -440,7 +425,6 @@
             margin: 10px 0 14px;
             border-left: 3px solid #e8b84a;
         }
-        /* 删除 modal-meta 样式 */
         .modal-video {
             border-radius: 10px;
             overflow: hidden;
@@ -453,16 +437,12 @@
             max-height: 50vh;
             background: #000;
         }
-
-        /* ===== 加载 / 空状态 ===== */
         .loading-text {
             text-align: center;
             padding: 40px 0;
             color: #7a8fa8;
             font-size: 1.1rem;
         }
-
-        /* ===== 滚动条 ===== */
         .modal-box::-webkit-scrollbar {
             width: 6px;
         }
@@ -473,46 +453,37 @@
             background: #3a5068;
             border-radius: 10px;
         }
-
-        /* ===== 实用 ===== */
-        .text-muted {
-            color: #7a8fa8;
-            font-size: 0.85rem;
-        }
     </style>
 </head>
 <body>
 
     <div class="app" id="app">
-        <!-- 头部 -->
         <header class="header">
             <div class="header-left">
                 <img src="profile.jpg" alt="avatar" class="avatar" id="avatarImg">
                 <span class="site-title">巴顿弹幕英雄连2</span>
             </div>
             <div class="header-right">
-                <a href="https://live.bilibili.com/31636744" target="_blank" rel="noopener">
+                <a href="https://live.bilibili.com/1987060053" target="_blank" rel="noopener">
                     直播 &gt;
                 </a>
             </div>
         </header>
 
-        <!-- 直播窗口 -->
-        <div class="live-section" id="liveSection">
-            <iframe id="bilibili-live-iframe"
-                src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=31636744"
-                frameborder="no" framespacing="0" scrolling="no"
-                allow="autoplay; encrypted-media" allowfullscreen="true">
+        <!-- 直播窗口 - 纯CSS自适应 -->
+        <div class="live-section">
+            <iframe
+                src="https://www.bilibili.com/blackboard/live/live-activity-player.html?cid=1987060053"
+                allow="autoplay; encrypted-media" allowfullscreen>
             </iframe>
         </div>
 
-        <!-- 单位展示 -->
         <section class="units-section" id="unitsContainer">
             <div class="loading-text">加载单位数据...</div>
         </section>
     </div>
 
-    <!-- ===== 模态弹窗 ===== -->
+    <!-- 模态框 -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box" id="modalBox">
             <button class="modal-close" id="modalClose">✕</button>
@@ -521,7 +492,6 @@
                 <img id="modalCarouselImg" src="" alt="单位图片">
                 <div class="carousel-nav" id="carouselNav"></div>
             </div>
-            <!-- 模态元信息已删除 -->
             <div class="modal-description" id="modalDesc">介绍文字</div>
             <div class="modal-video">
                 <video id="modalVideo" controls preload="metadata" playsinline>
@@ -533,33 +503,47 @@
     </div>
 
     <script>
-        // ============================================================
-        //  直播 iframe 自适应
-        // ============================================================
-        function resizeIframe() {
-            var iframe = document.getElementById('bilibili-live-iframe');
-            var container = document.getElementById('liveSection');
-            if (!iframe || !container) return;
-            // 获取容器宽度（减去可能的padding）
-            var width = container.clientWidth;
-            var height = width * 9 / 16; // 16:9
-            iframe.width = width;
-            iframe.height = height;
-        }
-        window.addEventListener('load', resizeIframe);
-        window.addEventListener('resize', resizeIframe);
-
-        // ============================================================
-        //  加载 data.json
-        // ============================================================
         let allData = null;
         let currentFaction = '盟军';
+
+        // 预加载图片
+        function preloadImages(urls) {
+            urls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+            });
+        }
 
         async function loadData() {
             try {
                 const resp = await fetch('data.json');
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 allData = await resp.json();
+                // 收集所有小图（缩略图）并预加载
+                const thumbUrls = [];
+                for (const faction of ['盟军', '帝国']) {
+                    const fData = allData[faction];
+                    if (!fData) continue;
+                    for (const tag of ['步兵', '装甲', '远程']) {
+                        const tagData = fData[tag];
+                        if (!tagData) continue;
+                        for (const giftName in tagData) {
+                            const gift = tagData[giftName];
+                            if (!gift.units) continue;
+                            for (const unit of gift.units) {
+                                if (unit.images && unit.images.length > 0) {
+                                    // 取第一张作为缩略图，并确保扩展名为 .jpg
+                                    let thumb = unit.images[0];
+                                    // 替换扩展名为 .jpg（如果原图是 .png 或其他则强制改为 .jpg）
+                                    thumb = thumb.replace(/\.[^.]+$/, '.jpg');
+                                    thumbUrls.push(faction + '/' + thumb);
+                                }
+                            }
+                        }
+                    }
+                }
+                preloadImages(thumbUrls);
+
                 renderFactionTabs();
                 renderFaction('盟军');
             } catch (err) {
@@ -569,9 +553,6 @@
             }
         }
 
-        // ============================================================
-        //  渲染阵营选项卡
-        // ============================================================
         function renderFactionTabs() {
             const container = document.getElementById('unitsContainer');
             container.innerHTML = '';
@@ -580,14 +561,8 @@
             tabsDiv.className = 'faction-tabs';
 
             const factions = ['盟军', '帝国'];
-            const icons = {
-                '盟军': '☭',
-                '帝国': '✙'
-            };
-            const iconClass = {
-                '盟军': 'icon-soviet',
-                '帝国': 'icon-nazi'
-            };
+            const icons = { '盟军': '☭', '帝国': '✙' };
+            const iconClass = { '盟军': 'icon-soviet', '帝国': 'icon-nazi' };
 
             factions.forEach(f => {
                 const btn = document.createElement('button');
@@ -604,15 +579,11 @@
             });
 
             container.appendChild(tabsDiv);
-
             const contentWrapper = document.createElement('div');
             contentWrapper.id = 'factionContentWrapper';
             container.appendChild(contentWrapper);
         }
 
-        // ============================================================
-        //  渲染指定阵营
-        // ============================================================
         function renderFaction(faction) {
             const wrapper = document.getElementById('factionContentWrapper');
             wrapper.innerHTML = '';
@@ -624,11 +595,7 @@
             }
 
             const tagOrder = ['步兵', '装甲', '远程'];
-            const tagLabels = {
-                '步兵': '步兵',
-                '装甲': '装甲',
-                '远程': '远程'
-            };
+            const tagLabels = { '步兵': '步兵', '装甲': '装甲', '远程': '远程' };
 
             for (const tag of tagOrder) {
                 const tagData = factionData[tag];
@@ -659,14 +626,12 @@
                     const giftGroup = document.createElement('div');
                     giftGroup.className = 'gift-group';
 
-                    // 礼物头部
                     const header = document.createElement('div');
                     header.className = 'gift-header';
 
                     const icon = document.createElement('img');
                     icon.className = 'gift-icon';
-                    const giftImagePath = `礼物/${gift.image}`;
-                    icon.src = giftImagePath;
+                    icon.src = `礼物/${gift.image}`;
                     icon.alt = giftName;
                     icon.loading = 'lazy';
                     icon.onerror = function() { this.src = 'profile.jpg'; };
@@ -686,7 +651,6 @@
                     header.append(icon, nameSpan, valueSpan, countSpan);
                     giftGroup.appendChild(header);
 
-                    // 礼物描述
                     if (gift.description) {
                         const descDiv = document.createElement('div');
                         descDiv.className = 'gift-description';
@@ -694,7 +658,6 @@
                         giftGroup.appendChild(descDiv);
                     }
 
-                    // 单位网格
                     const grid = document.createElement('div');
                     grid.className = 'unit-grid';
 
@@ -714,17 +677,16 @@
             wrapper.querySelectorAll('.tag-group').forEach(g => g.classList.remove('collapsed'));
         }
 
-        // ============================================================
-        //  创建单位卡片（无meta）
-        // ============================================================
         function createUnitCard(unit, faction) {
             const card = document.createElement('div');
             card.className = 'unit-card';
 
             const img = document.createElement('img');
             img.className = 'unit-card-img';
-            const firstImg = unit.images && unit.images.length > 0 ? unit.images[0] : 'profile.jpg';
-            img.src = faction + '/' + firstImg;
+            // 取第一张图，强制 .jpg 扩展名
+            let thumb = unit.images && unit.images.length > 0 ? unit.images[0] : 'profile.jpg';
+            thumb = thumb.replace(/\.[^.]+$/, '.jpg');
+            img.src = faction + '/' + thumb;
             img.alt = unit.name;
             img.loading = 'lazy';
             img.onerror = function() { this.src = 'profile.jpg'; };
@@ -734,17 +696,10 @@
             nameDiv.textContent = unit.name;
 
             card.append(img, nameDiv);
-
-            card.addEventListener('click', () => {
-                openModal(unit, faction);
-            });
-
+            card.addEventListener('click', () => openModal(unit, faction));
             return card;
         }
 
-        // ============================================================
-        //  模态弹窗（无meta）
-        // ============================================================
         let currentImages = [];
         let currentIndex = 0;
 
@@ -758,8 +713,13 @@
 
             title.textContent = unit.name;
 
+            // 大图：使用 png 扩展名
             const imgNames = unit.images && unit.images.length > 0 ? unit.images : ['profile.jpg'];
-            currentImages = imgNames.map(name => faction + '/' + name);
+            currentImages = imgNames.map(name => {
+                // 替换扩展名为 .png
+                let big = name.replace(/\.[^.]+$/, '.png');
+                return faction + '/' + big;
+            });
             currentIndex = 0;
 
             carouselImg.src = currentImages[0] || 'profile.jpg';
@@ -836,7 +796,6 @@
             const img = document.getElementById('modalCarouselImg');
             img.src = currentImages[currentIndex] || 'profile.jpg';
             img.onerror = function() { this.src = 'profile.jpg'; };
-
             const dots = document.querySelectorAll('#carouselNav .dot');
             dots.forEach((dot, i) => {
                 dot.classList.toggle('active', i === currentIndex);
@@ -865,9 +824,6 @@
             }
         });
 
-        // ============================================================
-        //  启动
-        // ============================================================
         loadData();
 
         document.getElementById('avatarImg').onerror = function() {

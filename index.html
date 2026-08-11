@@ -102,6 +102,7 @@
         .live-wrapper {
             width: 100%;
             position: relative;
+            overflow: hidden;
             padding-top: 56.25%;
         }
         .live-wrapper iframe {
@@ -160,6 +161,9 @@
             overflow: hidden;
             background: #111a24;
         }
+        .tag-group.collapsed .gift-group-wrapper {
+            display: none;
+        }
         .tag-label {
             display: flex;
             align-items: center;
@@ -185,9 +189,6 @@
         }
         .tag-group.collapsed .tag-label .arrow {
             transform: rotate(-90deg);
-        }
-        .tag-group.collapsed .gift-group-wrapper {
-            display: none;
         }
         .gift-group-wrapper {
             padding: 12px 16px 16px;
@@ -524,10 +525,7 @@
         window.addEventListener('load', scaleIframe);
         window.addEventListener('resize', scaleIframe);
 
-        // ===== 数据加载与渲染 =====
-        let allData = null;
-        let currentFaction = '盟军';
-
+        // ===== 工具：预加载单张图片 =====
         function preloadImage(url) {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -537,75 +535,30 @@
             });
         }
 
-        // 预加载小图（礼物图标 + 卡片封面 jpg）
-        async function preloadSmallImages(data) {
-            const urls = [];
-            for (const faction of ['盟军', '帝国']) {
-                const fData = data[faction];
-                if (!fData) continue;
-                for (const tag of ['步兵', '装甲', '远程']) {
-                    const tagData = fData[tag];
-                    if (!tagData) continue;
-                    for (const giftName in tagData) {
-                        const gift = tagData[giftName];
-                        if (gift.image) urls.push(`礼物/${gift.image}`);
-                        if (gift.units) {
-                            for (const unit of gift.units) {
-                                if (unit.images && unit.images.length) {
-                                    const firstImg = unit.images[0];
-                                    const jpgPath = firstImg.replace(/\.(jpg|jpeg|png)$/i, '.jpg');
-                                    urls.push(`${faction}/${jpgPath}`);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            const unique = [...new Set(urls)];
-            await Promise.all(unique.map(url => preloadImage(url)));
-        }
-
-        // 后台静默加载大图（png）
-        function preloadLargeImages(data) {
-            const urls = [];
-            for (const faction of ['盟军', '帝国']) {
-                const fData = data[faction];
-                if (!fData) continue;
-                for (const tag of ['步兵', '装甲', '远程']) {
-                    const tagData = fData[tag];
-                    if (!tagData) continue;
-                    for (const giftName in tagData) {
-                        const gift = tagData[giftName];
-                        if (gift.units) {
-                            for (const unit of gift.units) {
-                                if (unit.images) {
-                                    for (const imgName of unit.images) {
-                                        const pngPath = imgName.replace(/\.(jpg|jpeg|png)$/i, '.png');
-                                        const url = `${faction}/${pngPath}`;
-                                        if (!urls.includes(url)) urls.push(url);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // 不等待，静默加载
-            urls.forEach(url => preloadImage(url));
-        }
+        // ===== 分阶段加载 =====
+        let allData = null;
+        let currentFaction = '盟军';
 
         async function loadData() {
             try {
                 const resp = await fetch('data.json');
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
                 allData = await resp.json();
-                // 1. 优先加载小图
-                await preloadSmallImages(allData);
-                // 2. 渲染页面（此时小图已就绪）
+
+                // 1. 加载礼物图标
+                await preloadGiftIcons(allData);
+                // 渲染数据区，所有标签默认折叠
                 renderFactionTabs();
-                renderFaction('盟军');
-                // 3. 后台静默加载大图
-                preloadLargeImages(allData);
+                renderFaction('盟军', true); // 传入 collapsed = true
+
+                // 2. 后台加载卡片封面 (.jpg)
+                await preloadCardImages(allData);
+                // 展开所有标签
+                expandAllTags();
+
+                // 3. 后台静默加载模态大图 (.png)
+                preloadModalImages(allData); // 不等待
+
             } catch (err) {
                 document.getElementById('unitsContainer').innerHTML =
                     `<div class="loading-text" style="color:#e66767;">数据加载失败：${err.message}</div>`;
@@ -613,6 +566,97 @@
             }
         }
 
+        // ---- 收集礼物图标 URL ----
+        function collectGiftUrls(data) {
+            const urls = [];
+            for (const faction of ['盟军', '帝国']) {
+                const fData = data[faction];
+                if (!fData) continue;
+                for (const tag of ['步兵', '装甲', '远程']) {
+                    const tagData = fData[tag];
+                    if (!tagData) continue;
+                    for (const giftName in tagData) {
+                        const gift = tagData[giftName];
+                        if (gift.image) {
+                            urls.push(`礼物/${gift.image}`);
+                        }
+                    }
+                }
+            }
+            return [...new Set(urls)];
+        }
+
+        async function preloadGiftIcons(data) {
+            const urls = collectGiftUrls(data);
+            await Promise.all(urls.map(preloadImage));
+        }
+
+        // ---- 收集卡片封面 (.jpg) ----
+        function collectCardUrls(data) {
+            const urls = [];
+            for (const faction of ['盟军', '帝国']) {
+                const fData = data[faction];
+                if (!fData) continue;
+                for (const tag of ['步兵', '装甲', '远程']) {
+                    const tagData = fData[tag];
+                    if (!tagData) continue;
+                    for (const giftName in tagData) {
+                        const gift = tagData[giftName];
+                        if (!gift.units) continue;
+                        for (const unit of gift.units) {
+                            if (unit.images) {
+                                for (const imgName of unit.images) {
+                                    // 强制 .jpg
+                                    const jpgName = imgName.replace(/\.(jpg|jpeg|png)$/i, '.jpg');
+                                    urls.push(`${faction}/${jpgName}`);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return [...new Set(urls)];
+        }
+
+        async function preloadCardImages(data) {
+            const urls = collectCardUrls(data);
+            await Promise.all(urls.map(preloadImage));
+        }
+
+        // ---- 收集模态大图 (.png) ----
+        function collectModalUrls(data) {
+            const urls = [];
+            for (const faction of ['盟军', '帝国']) {
+                const fData = data[faction];
+                if (!fData) continue;
+                for (const tag of ['步兵', '装甲', '远程']) {
+                    const tagData = fData[tag];
+                    if (!tagData) continue;
+                    for (const giftName in tagData) {
+                        const gift = tagData[giftName];
+                        if (!gift.units) continue;
+                        for (const unit of gift.units) {
+                            if (unit.images) {
+                                for (const imgName of unit.images) {
+                                    // 强制 .png
+                                    const pngName = imgName.replace(/\.(jpg|jpeg|png)$/i, '.png');
+                                    urls.push(`${faction}/${pngName}`);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return [...new Set(urls)];
+        }
+
+        function preloadModalImages(data) {
+            const urls = collectModalUrls(data);
+            // 静默加载，不等待
+            urls.forEach(url => preloadImage(url));
+        }
+
+        // ===== 渲染函数 =====
         function renderFactionTabs() {
             const container = document.getElementById('unitsContainer');
             container.innerHTML = '';
@@ -630,7 +674,7 @@
                     document.querySelectorAll('.faction-tab').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentFaction = f;
-                    renderFaction(f);
+                    renderFaction(f, false); // 切换阵营时默认展开（因为已加载过卡片）
                 });
                 tabsDiv.appendChild(btn);
             });
@@ -640,7 +684,7 @@
             container.appendChild(contentWrapper);
         }
 
-        function renderFaction(faction) {
+        function renderFaction(faction, collapsed = false) {
             const wrapper = document.getElementById('factionContentWrapper');
             wrapper.innerHTML = '';
             const factionData = allData[faction];
@@ -654,11 +698,13 @@
                 const tagData = factionData[tag];
                 if (!tagData || Object.keys(tagData).length === 0) continue;
                 const tagGroup = document.createElement('div');
-                tagGroup.className = 'tag-group';
+                tagGroup.className = 'tag-group' + (collapsed ? ' collapsed' : '');
                 const label = document.createElement('div');
                 label.className = 'tag-label';
                 label.innerHTML = `${tagLabels[tag]} <span class="arrow">▼</span>`;
-                label.addEventListener('click', () => { tagGroup.classList.toggle('collapsed'); });
+                label.addEventListener('click', () => {
+                    tagGroup.classList.toggle('collapsed');
+                });
                 tagGroup.appendChild(label);
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'gift-group-wrapper';
@@ -705,7 +751,6 @@
                 tagGroup.appendChild(wrapperDiv);
                 wrapper.appendChild(tagGroup);
             }
-            wrapper.querySelectorAll('.tag-group').forEach(g => g.classList.remove('collapsed'));
         }
 
         function createUnitCard(unit, faction) {
@@ -723,10 +768,17 @@
             nameDiv.className = 'unit-card-name';
             nameDiv.textContent = unit.name;
             card.append(img, nameDiv);
-            card.addEventListener('click', () => { openModal(unit, faction); });
+            card.addEventListener('click', () => {
+                openModal(unit, faction);
+            });
             return card;
         }
 
+        function expandAllTags() {
+            document.querySelectorAll('.tag-group').forEach(g => g.classList.remove('collapsed'));
+        }
+
+        // ===== 模态框 =====
         let currentImages = [];
         let currentIndex = 0;
 
@@ -808,7 +860,9 @@
             img.src = currentImages[currentIndex] || 'profile.jpg';
             img.onerror = function() { this.src = 'profile.jpg'; };
             const dots = document.querySelectorAll('#carouselNav .dot');
-            dots.forEach((dot, i) => { dot.classList.toggle('active', i === currentIndex); });
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
         }
 
         function closeModal() {
@@ -833,6 +887,7 @@
             }
         });
 
+        // ===== 启动 =====
         loadData();
         document.getElementById('avatarImg').onerror = function() { this.src = 'profile.jpg'; };
     </script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>B站视频轮播</title>
+    <title>B站视频轮播 · 1909</title>
     <style>
         * {
             margin: 0;
@@ -228,10 +228,9 @@
         const label = document.getElementById('currentVideoLabel');
         const statusSpan = document.getElementById('carouselStatus');
 
-        // 构建播放器 URL（自动播放、静音、启用 postMessage、强制最高画质）
+        // 构建播放器 URL：强制 quality=4（1080p），若不可用自动降级
         function buildPlayerUrl(bvid) {
-            // 不指定 quality，播放器会依据 high_quality=1 自动选择最高可用
-            return `https://player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1&autoplay=1&muted=1&enablePlayerPostMessage=1`;
+            return `https://player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1&autoplay=1&muted=1&enablePlayerPostMessage=1&quality=4`;
         }
 
         // 切换到指定索引的视频
@@ -240,42 +239,88 @@
             iframe.src = buildPlayerUrl(bvid);
             label.textContent = bvid;
             statusSpan.textContent = '加载中...';
+            // 重置轮询状态（切换时重置）
+            clearPolling();
+            startPolling();
         }
 
-        // 监听播放器消息（包括 ended 事件）
-        window.addEventListener('message', function(event) {
-            // 不限制 event.source，以便捕获所有消息（避免跨域问题）
+        // ----- 监听播放器消息（ended 事件） -----
+        function handleMessage(event) {
             try {
                 let data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                // 调试日志（可在控制台查看）
-                console.log('收到播放器消息:', data);
+                // 打印所有消息，便于调试
+                console.log('[播放器消息]', data);
 
-                let eventType = null;
-                // 处理两种常见格式
+                let ended = false;
+                // 情况1：直接 ended 事件
                 if (data.event === 'ended') {
-                    eventType = 'ended';
-                } else if (data.event === 'player' && data.data && data.data.event === 'ended') {
-                    eventType = 'ended';
+                    ended = true;
+                }
+                // 情况2：嵌套在 player 中
+                if (data.event === 'player' && data.data) {
+                    if (data.data.event === 'ended') {
+                        ended = true;
+                    }
+                    // 如果收到状态响应，检查 ended 字段
+                    if (data.data.event === 'status' && data.data.data && data.data.data.ended !== undefined) {
+                        if (data.data.data.ended === true) {
+                            ended = true;
+                        }
+                    }
                 }
 
-                if (eventType === 'ended') {
-                    // 视频播放结束，切换到下一个
+                if (ended) {
+                    console.log('检测到视频结束，切换下一个');
                     currentIndex = (currentIndex + 1) % videoList.length;
                     switchVideo(currentIndex);
                     statusSpan.textContent = '已切换';
-                } else if (data.event === 'player' && data.data && data.data.event === 'ready') {
-                    statusSpan.textContent = '播放中';
                 }
             } catch (e) {
-                // 忽略解析错误
-                // 如果数据不是 JSON，则忽略
+                // 忽略非 JSON 消息
             }
-        });
+        }
+
+        window.addEventListener('message', handleMessage);
+
+        // ----- 主动轮询播放状态（兜底） -----
+        let pollingTimer = null;
+
+        function sendGetStatus() {
+            if (iframe.contentWindow) {
+                // 发送 getStatus 请求
+                const msg = {
+                    event: 'player',
+                    data: {
+                        event: 'getStatus'
+                    }
+                };
+                try {
+                    iframe.contentWindow.postMessage(JSON.stringify(msg), '*');
+                } catch (e) {
+                    // 忽略
+                }
+            }
+        }
+
+        function startPolling() {
+            if (pollingTimer) clearInterval(pollingTimer);
+            pollingTimer = setInterval(sendGetStatus, 2000);
+        }
+
+        function clearPolling() {
+            if (pollingTimer) {
+                clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+        }
 
         // 初始化加载第一个视频
         switchVideo(currentIndex);
 
-        // ----- 缩放适配 -----
+        // 启动轮询
+        startPolling();
+
+        // ----- 缩放适配（保持不变） -----
         const base = document.getElementById('iframeBase');
         const wrapper = document.getElementById('scaleWrapper');
         const BASE_WIDTH = 1000;
@@ -317,6 +362,12 @@
             });
             ro.observe(document.querySelector('.live-card'));
         }
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', function() {
+            clearPolling();
+            window.removeEventListener('message', handleMessage);
+        });
     })();
 </script>
 </body>

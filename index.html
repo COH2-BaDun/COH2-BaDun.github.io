@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>B站视频轮播 · 结束切换</title>
+    <title>B站视频轮播</title>
     <style>
         * {
             margin: 0;
@@ -71,15 +71,8 @@
         }
 
         @keyframes pulse-dot {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.4;
-                transform: scale(0.7);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
         }
 
         .live-title {
@@ -172,35 +165,15 @@
         }
 
         @media (max-width: 640px) {
-            body {
-                padding: 10px;
-            }
-            .live-card {
-                padding: 14px;
-                border-radius: 18px;
-            }
-            .live-title {
-                font-size: 15px;
-            }
-            .live-title .video-id {
-                font-size: 12px;
-                padding: 1px 8px;
-            }
-            .live-footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
+            body { padding: 10px; }
+            .live-card { padding: 14px; border-radius: 18px; }
+            .live-title { font-size: 15px; }
+            .live-title .video-id { font-size: 12px; padding: 1px 8px; }
+            .live-footer { flex-direction: column; align-items: flex-start; gap: 4px; }
         }
         @media (max-width: 400px) {
-            .live-card {
-                padding: 10px;
-                border-radius: 14px;
-            }
-            .live-badge {
-                font-size: 11px;
-                padding: 3px 10px 3px 8px;
-            }
+            .live-card { padding: 10px; border-radius: 14px; }
+            .live-badge { font-size: 11px; padding: 3px 10px 3px 8px; }
         }
     </style>
 </head>
@@ -255,9 +228,10 @@
         const label = document.getElementById('currentVideoLabel');
         const statusSpan = document.getElementById('carouselStatus');
 
-        // 构建播放器 URL（自动播放、静音、启用 postMessage、强制最高画质 quality=80 代表 4K，无则降级）
+        // 构建播放器 URL（自动播放、静音、启用 postMessage、强制最高画质）
         function buildPlayerUrl(bvid) {
-            return `https://player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1&autoplay=1&muted=1&enablePlayerPostMessage=1&quality=80`;
+            // 不指定 quality，播放器会依据 high_quality=1 自动选择最高可用
+            return `https://player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1&autoplay=1&muted=1&enablePlayerPostMessage=1`;
         }
 
         // 切换到指定索引的视频
@@ -270,13 +244,13 @@
 
         // 监听播放器消息（包括 ended 事件）
         window.addEventListener('message', function(event) {
-            // 确保消息来自我们的 iframe
-            if (event.source !== iframe.contentWindow) return;
-
+            // 不限制 event.source，以便捕获所有消息（避免跨域问题）
             try {
                 let data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                let eventType = null;
+                // 调试日志（可在控制台查看）
+                console.log('收到播放器消息:', data);
 
+                let eventType = null;
                 // 处理两种常见格式
                 if (data.event === 'ended') {
                     eventType = 'ended';
@@ -294,17 +268,12 @@
                 }
             } catch (e) {
                 // 忽略解析错误
+                // 如果数据不是 JSON，则忽略
             }
         });
 
         // 初始化加载第一个视频
         switchVideo(currentIndex);
-
-        // 由于可能由于某些原因无法收到 ended 事件，增加一个 fallback：定期检查视频是否播放结束
-        // 但B站播放器无法直接通过 JS 获取进度，我们可以通过监听 iframe 的 title 变化或其他方式，但不稳定。
-        // 因此，我们主要依赖 postMessage，同时为了保险，设置一个定时器，如果长时间未收到消息，可能网络问题，
-        // 但为了不重复切换，我们不做强制 fallback，因为用户反馈的是没实现，很可能 postMessage 未启用，
-        // 我们已经添加了 enablePlayerPostMessage=1，应该能正常工作。
 
         // ----- 缩放适配 -----
         const base = document.getElementById('iframeBase');

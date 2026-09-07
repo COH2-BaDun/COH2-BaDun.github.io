@@ -71,7 +71,14 @@
         }
         .faction-btn .icon {
             font-size: 18px;
-            color: #e04848; /* 红色标志 */
+        }
+        /* 盟军红色 */
+        .faction-btn[data-faction="盟军"] .icon {
+            color: #e04848;
+        }
+        /* 帝国古铜金色 */
+        .faction-btn[data-faction="帝国"] .icon {
+            color: #c0a060;
         }
         .faction-btn .label {
             font-size: 10px;
@@ -153,6 +160,41 @@
             opacity: 0;
             pointer-events: none;
             border-right-color: transparent;
+        }
+
+        /* 礼物描述行（新增） */
+        .gift-desc-wrapper {
+            flex: 0 0 auto;
+            background: #111a24;
+            border-bottom: 1px solid #1f2b38;
+            padding: 6px 16px;
+            overflow: hidden;
+            white-space: nowrap;
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+        }
+        .gift-desc-scroll {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 12s linear infinite;
+            font-size: 18px;
+            color: #b0c8dd;
+            font-weight: 400;
+        }
+        .gift-desc-scroll.no-scroll {
+            animation: none;
+            padding-left: 0;
+            display: block;
+            text-align: center;
+        }
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
         }
 
         /* 媒体容器（左右分布） */
@@ -353,7 +395,7 @@
             display: inline-block;
             padding-left: 100%;
             animation: marquee 12s linear infinite;
-            font-size: 20px; /* 增大描述文字 */
+            font-size: 20px;
             color: #c6d4e3;
             font-weight: 500;
         }
@@ -362,14 +404,6 @@
             padding-left: 0;
             display: block;
             text-align: center;
-        }
-        @keyframes marquee {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
         }
 
         .unit-info .unit-nav {
@@ -440,6 +474,10 @@
                 font-size: 17px;
                 animation-duration: 10s;
             }
+            .gift-desc-scroll {
+                font-size: 15px;
+                animation-duration: 10s;
+            }
             .sidebar {
                 flex: 0 0 48px;
                 min-width: 48px;
@@ -465,6 +503,10 @@
             .gift-btn .gift-icon-small {
                 width: 14px;
                 height: 14px;
+            }
+            .gift-desc-wrapper {
+                padding: 4px 10px;
+                min-height: 28px;
             }
             .unit-info {
                 padding: 6px 10px 8px;
@@ -504,6 +546,10 @@
                 font-size: 15px;
                 animation-duration: 8s;
             }
+            .gift-desc-scroll {
+                font-size: 13px;
+                animation-duration: 8s;
+            }
             .unit-title-overlay {
                 font-size: 14px;
                 padding: 3px 10px;
@@ -528,6 +574,11 @@
             <nav class="gift-nav" id="giftNav">
                 <span style="color:#4a5a6e;font-size:13px;flex:1;text-align:center;">加载数据...</span>
             </nav>
+
+            <!-- 礼物描述行 -->
+            <div class="gift-desc-wrapper hidden" id="giftDescWrapper">
+                <span class="gift-desc-scroll" id="giftDesc">礼物描述</span>
+            </div>
 
             <section class="unit-display" id="unitDisplay">
                 <div class="empty-state" id="emptyState">
@@ -601,6 +652,8 @@
             const giftNav = $('giftNav'),
                 sidebar = $('sidebar'),
                 emptyState = $('emptyState');
+            const giftDescWrapper = $('giftDescWrapper'),
+                giftDesc = $('giftDesc');
             const mediaContainer = $('mediaContainer');
             const unitSlider = $('unitSlider'),
                 sliderTrack = $('sliderTrack'),
@@ -642,13 +695,11 @@
 
             // ---- 预加载资源 ----
             function preloadUnitResources(unit, faction) {
-                // 预加载图片
                 const images = getUnitImages(unit, faction);
                 images.forEach(src => {
                     const img = new Image();
                     img.src = src;
                 });
-                // 预加载视频
                 if (unit.video) {
                     const videoPath = `视频/${unit.video}`;
                     const vid = document.createElement('video');
@@ -665,6 +716,26 @@
                 });
             }
 
+            // ---- 更新礼物描述 ----
+            function updateGiftDesc(giftData) {
+                const desc = giftData?.description || '暂无描述';
+                giftDesc.textContent = desc;
+                giftDescWrapper.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    const wrapper = giftDesc.parentElement;
+                    const scrollWidth = giftDesc.scrollWidth;
+                    const clientWidth = wrapper.clientWidth;
+                    if (scrollWidth > clientWidth) {
+                        giftDesc.classList.remove('no-scroll');
+                        giftDesc.style.animation = 'none';
+                        void giftDesc.offsetHeight;
+                        giftDesc.style.animation = '';
+                    } else {
+                        giftDesc.classList.add('no-scroll');
+                    }
+                });
+            }
+
             // ---- 渲染礼物导航 ----
             function renderGiftNav(faction) {
                 const gifts = getGifts(faction);
@@ -672,6 +743,7 @@
                 if (!gifts.length) {
                     giftNav.innerHTML =
                         `<span style="color:#4a5a6e;font-size:13px;flex:1;text-align:center;">该阵营暂无礼物</span>`;
+                    giftDescWrapper.classList.add('hidden');
                     return;
                 }
                 let idx = gifts.findIndex(g => g.key === currentGiftKey);
@@ -680,12 +752,14 @@
                 currentGiftData = gifts[idx];
                 currentGiftIndex = idx;
 
+                // 更新礼物描述
+                updateGiftDesc(currentGiftData);
+
                 // 预加载当前礼物的所有资源
                 preloadGiftUnits(currentGiftData, faction);
 
                 const prev = gifts[idx - 1] || null,
                     next = gifts[idx + 1] || null;
-                // 构建按钮（带图标）
                 const buildBtn = (gift, cls) => {
                     if (!gift) return `<button class="gift-btn invisible" disabled></button>`;
                     const iconSrc = gift.image ? `礼物/${gift.image}` : '';
@@ -711,7 +785,7 @@
                             if (gd) {
                                 currentGiftKey = key;
                                 currentGiftData = gd;
-                                // 预加载新礼物的资源
+                                updateGiftDesc(gd);
                                 preloadGiftUnits(gd, faction);
                                 stopUnitCycle();
                                 renderGiftNav(faction);
@@ -754,11 +828,9 @@
                 unitIndexPos = idx;
                 const unit = unitList[idx];
 
-                // 更新标题（名称 + 序号）
                 unitNameTitle.textContent = unit.name || '未命名';
                 unitSeq.textContent = `${idx + 1} / ${unitList.length}`;
 
-                // 更新描述
                 const descText = unit.description || '暂无描述';
                 unitDesc.textContent = descText;
                 requestAnimationFrame(() => {
@@ -775,7 +847,6 @@
                     }
                 });
 
-                // 图片
                 const images = getUnitImages(unit, faction);
                 imageList = images;
                 imageIndexPos = 0;
@@ -822,7 +893,6 @@
                     sliderNext.classList.toggle('hidden', !multi);
                 }
 
-                // 视频
                 if (unit.video) {
                     const videoPath = `视频/${unit.video}`;
                     unitVideo.src = videoPath;
@@ -946,6 +1016,7 @@
                 currentGiftKey = newGift.key;
                 currentGiftData = newGift;
                 currentGiftIndex = nextIdx;
+                updateGiftDesc(newGift);
                 preloadGiftUnits(newGift, currentFaction);
                 stopUnitCycle();
                 renderGiftNav(currentFaction);
@@ -958,6 +1029,7 @@
                 currentGiftKey = newGift.key;
                 currentGiftData = newGift;
                 currentGiftIndex = prevIdx;
+                updateGiftDesc(newGift);
                 preloadGiftUnits(newGift, currentFaction);
                 stopUnitCycle();
                 renderGiftNav(currentFaction);

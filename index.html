@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>巴顿弹幕英雄连2 · 图鉴 (测试版二)</title>
+    <title>巴顿弹幕英雄连2</title>
     <style>
-        /* === 全局重置 === */
         *,
         *::before,
         *::after {
@@ -39,8 +38,6 @@
             overflow: hidden;
             background: #0b0e14;
         }
-
-        /* 左侧阵营 */
         .sidebar {
             flex: 0 0 56px;
             min-width: 56px;
@@ -72,11 +69,9 @@
         .faction-btn .icon {
             font-size: 18px;
         }
-        /* 盟军红色 */
         .faction-btn[data-faction="盟军"] .icon {
             color: #e04848;
         }
-        /* 帝国古铜金色 */
         .faction-btn[data-faction="帝国"] .icon {
             color: #c0a060;
         }
@@ -96,7 +91,6 @@
         .faction-btn.active .label {
             color: #f5d77b;
         }
-
         .main {
             flex: 1;
             display: flex;
@@ -104,8 +98,6 @@
             min-width: 0;
             background: #0f1822;
         }
-
-        /* 礼物导航（含图标） */
         .gift-nav {
             flex: 0 0 auto;
             background: #111a24;
@@ -161,8 +153,6 @@
             pointer-events: none;
             border-right-color: transparent;
         }
-
-        /* 礼物描述行（新增） */
         .gift-desc-wrapper {
             flex: 0 0 auto;
             background: #111a24;
@@ -196,8 +186,6 @@
                 transform: translateX(-100%);
             }
         }
-
-        /* 媒体容器（左右分布） */
         .unit-display {
             flex: 1;
             display: flex;
@@ -213,8 +201,6 @@
             background: #070c14;
             position: relative;
         }
-
-        /* 单位标题（图片和视频中间上方） */
         .unit-title-overlay {
             position: absolute;
             top: 12px;
@@ -240,8 +226,6 @@
             margin-left: 8px;
             font-size: 0.8em;
         }
-
-        /* 左侧图像区域 */
         .unit-slider {
             flex: 1;
             position: relative;
@@ -280,7 +264,6 @@
             background: #0d141d;
             font-weight: 300;
         }
-
         .slider-arrow {
             position: absolute;
             top: 50%;
@@ -319,7 +302,6 @@
         .slider-arrow.right {
             right: 8px;
         }
-
         .slider-dots {
             position: absolute;
             bottom: 12px;
@@ -349,8 +331,6 @@
             transform: scale(1.25);
             box-shadow: 0 0 12px rgba(232, 184, 74, 0.3);
         }
-
-        /* 右侧视频区域 */
         .video-container {
             flex: 1;
             position: relative;
@@ -372,8 +352,6 @@
             text-align: center;
             padding: 20px;
         }
-
-        /* 底部信息栏（仅保留描述滚动 + 导航按钮） */
         .unit-info {
             flex: 0 0 auto;
             background: #111a24;
@@ -405,7 +383,6 @@
             display: block;
             text-align: center;
         }
-
         .unit-info .unit-nav {
             display: flex;
             align-items: center;
@@ -434,7 +411,6 @@
             opacity: 0.2;
             pointer-events: none;
         }
-
         .empty-state {
             flex: 1;
             display: flex;
@@ -454,8 +430,6 @@
         .hidden {
             display: none !important;
         }
-
-        /* 响应式：小屏幕堆叠 */
         @media (max-width: 640px) {
             .media-container {
                 flex-direction: column;
@@ -574,8 +548,6 @@
             <nav class="gift-nav" id="giftNav">
                 <span style="color:#4a5a6e;font-size:13px;flex:1;text-align:center;">加载数据...</span>
             </nav>
-
-            <!-- 礼物描述行 -->
             <div class="gift-desc-wrapper hidden" id="giftDescWrapper">
                 <span class="gift-desc-scroll" id="giftDesc">礼物描述</span>
             </div>
@@ -587,7 +559,6 @@
                     <div style="font-size:12px;color:#3a4a5a;">请检查 data.js 是否存在</div>
                 </div>
                 <div class="media-container hidden" id="mediaContainer">
-                    <!-- 单位标题（居中上方） -->
                     <div class="unit-title-overlay" id="unitTitle">
                         <span id="unitNameTitle">未命名</span>
                         <span class="unit-seq" id="unitSeq">1/1</span>
@@ -603,7 +574,6 @@
                         <div class="no-video hidden" id="noVideoMsg">📹 无视频</div>
                     </div>
                 </div>
-                <!-- 底部信息栏（仅描述 + 导航） -->
                 <div class="unit-info hidden" id="unitInfo">
                     <div class="unit-desc-wrapper">
                         <span class="unit-desc-scroll" id="unitDesc">暂无描述</span>
@@ -632,6 +602,7 @@
             }
 
             const allData = UNIT_DATA;
+            const FACTION_ORDER = ['盟军', '帝国'];
             let currentFaction = '盟军';
             let currentGiftKey = null;
             let currentGiftData = null;
@@ -693,7 +664,7 @@
                 return [];
             }
 
-            // ---- 预加载资源 ----
+            // ---- 预加载 ----
             function preloadUnitResources(unit, faction) {
                 const images = getUnitImages(unit, faction);
                 images.forEach(src => {
@@ -736,6 +707,13 @@
                 });
             }
 
+            // ---- 更新侧栏高亮 ----
+            function updateSidebar(faction) {
+                sidebar.querySelectorAll('.faction-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.faction === faction);
+                });
+            }
+
             // ---- 渲染礼物导航 ----
             function renderGiftNav(faction) {
                 const gifts = getGifts(faction);
@@ -752,10 +730,7 @@
                 currentGiftData = gifts[idx];
                 currentGiftIndex = idx;
 
-                // 更新礼物描述
                 updateGiftDesc(currentGiftData);
-
-                // 预加载当前礼物的所有资源
                 preloadGiftUnits(currentGiftData, faction);
 
                 const prev = gifts[idx - 1] || null,
@@ -986,11 +961,77 @@
                 }
             }
 
-            // ---- 切换逻辑（单位/礼物） ----
+            // ---- 跨阵营礼物切换核心逻辑 ----
+            function nextGift() {
+                if (!currentGiftList.length) return;
+                if (currentGiftIndex === currentGiftList.length - 1) {
+                    // 切换到下一个阵营
+                    const curIdx = FACTION_ORDER.indexOf(currentFaction);
+                    const nextIdx = (curIdx + 1) % FACTION_ORDER.length;
+                    const newFaction = FACTION_ORDER[nextIdx];
+                    const newGifts = getGifts(newFaction);
+                    if (!newGifts.length) {
+                        // 如果下一个阵营没有礼物，则停留在当前（理论上不会发生）
+                        return;
+                    }
+                    currentFaction = newFaction;
+                    updateSidebar(newFaction);
+                    currentGiftKey = newGifts[0].key;
+                    currentGiftData = newGifts[0];
+                    currentGiftIndex = 0;
+                    stopUnitCycle();
+                    renderGiftNav(newFaction);
+                } else {
+                    const nextIdx = currentGiftIndex + 1;
+                    const newGift = currentGiftList[nextIdx];
+                    currentGiftKey = newGift.key;
+                    currentGiftData = newGift;
+                    currentGiftIndex = nextIdx;
+                    updateGiftDesc(newGift);
+                    preloadGiftUnits(newGift, currentFaction);
+                    stopUnitCycle();
+                    renderGiftNav(currentFaction);
+                }
+            }
+
+            function prevGift() {
+                if (!currentGiftList.length) return;
+                if (currentGiftIndex === 0) {
+                    // 切换到上一个阵营
+                    const curIdx = FACTION_ORDER.indexOf(currentFaction);
+                    const prevIdx = (curIdx - 1 + FACTION_ORDER.length) % FACTION_ORDER.length;
+                    const newFaction = FACTION_ORDER[prevIdx];
+                    const newGifts = getGifts(newFaction);
+                    if (!newGifts.length) {
+                        return;
+                    }
+                    const lastIdx = newGifts.length - 1;
+                    currentFaction = newFaction;
+                    updateSidebar(newFaction);
+                    currentGiftKey = newGifts[lastIdx].key;
+                    currentGiftData = newGifts[lastIdx];
+                    currentGiftIndex = lastIdx;
+                    stopUnitCycle();
+                    renderGiftNav(newFaction);
+                } else {
+                    const prevIdx = currentGiftIndex - 1;
+                    const newGift = currentGiftList[prevIdx];
+                    currentGiftKey = newGift.key;
+                    currentGiftData = newGift;
+                    currentGiftIndex = prevIdx;
+                    updateGiftDesc(newGift);
+                    preloadGiftUnits(newGift, currentFaction);
+                    stopUnitCycle();
+                    renderGiftNav(currentFaction);
+                }
+            }
+
+            // ---- 单位切换（自动/手动） ----
             function nextUnit(auto = false) {
                 if (!unitList.length) return;
                 if (unitIndexPos === unitList.length - 1) {
-                    nextGift();
+                    nextGift(); // 自动切换礼物，不暂停
+                    if (!auto) pauseAuto('unit');
                 } else {
                     const n = unitIndexPos + 1;
                     showUnit(n, currentFaction);
@@ -1002,6 +1043,7 @@
                 if (!unitList.length) return;
                 if (unitIndexPos === 0) {
                     prevGift();
+                    pauseAuto('unit');
                 } else {
                     const n = unitIndexPos - 1;
                     showUnit(n, currentFaction);
@@ -1009,33 +1051,7 @@
                 }
             }
 
-            function nextGift() {
-                if (!currentGiftList.length) return;
-                const nextIdx = (currentGiftIndex + 1) % currentGiftList.length;
-                const newGift = currentGiftList[nextIdx];
-                currentGiftKey = newGift.key;
-                currentGiftData = newGift;
-                currentGiftIndex = nextIdx;
-                updateGiftDesc(newGift);
-                preloadGiftUnits(newGift, currentFaction);
-                stopUnitCycle();
-                renderGiftNav(currentFaction);
-            }
-
-            function prevGift() {
-                if (!currentGiftList.length) return;
-                const prevIdx = (currentGiftIndex - 1 + currentGiftList.length) % currentGiftList.length;
-                const newGift = currentGiftList[prevIdx];
-                currentGiftKey = newGift.key;
-                currentGiftData = newGift;
-                currentGiftIndex = prevIdx;
-                updateGiftDesc(newGift);
-                preloadGiftUnits(newGift, currentFaction);
-                stopUnitCycle();
-                renderGiftNav(currentFaction);
-                pauseAuto('gift');
-            }
-
+            // ---- 暂停/恢复 ----
             function pauseAuto(source) {
                 if (!isAutoPaused) {
                     isAutoPaused = true;
@@ -1053,12 +1069,11 @@
                 }, PAUSE_RESUME_DELAY);
             }
 
-            // ---- 切换阵营 ----
+            // ---- 切换阵营（手动点击侧栏） ----
             function switchFaction(faction) {
                 if (faction === currentFaction) return;
                 currentFaction = faction;
-                sidebar.querySelectorAll('.faction-btn').forEach(b => b.classList.toggle('active', b.dataset.faction ===
-                    faction));
+                updateSidebar(faction);
                 stopUnitCycle();
                 isAutoPaused = false;
                 if (pauseTimeout) clearTimeout(pauseTimeout);

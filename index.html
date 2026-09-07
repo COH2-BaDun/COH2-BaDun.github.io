@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>巴顿弹幕英雄连2 · 图鉴 (测试版二)</title>
+    <title>巴顿弹幕英雄连2 · 图鉴</title>
     <style>
-        /* 全局重置同前，只修改布局相关 */
+        /* 样式保持不变，此处省略（与之前完全一致） */
         *,
         *::before,
         *::after {
@@ -137,7 +137,6 @@
             border-right-color: transparent;
         }
 
-        /* 单位展示：左右两栏 */
         .unit-display {
             flex: 1;
             display: flex;
@@ -152,7 +151,6 @@
             min-height: 0;
             background: #070c14;
         }
-        /* 左侧图像区域 */
         .unit-slider {
             flex: 1;
             position: relative;
@@ -191,7 +189,6 @@
             background: #0d141d;
             font-weight: 300;
         }
-        /* 单位名称浮在左侧图片上 */
         .unit-name-overlay {
             position: absolute;
             bottom: 0;
@@ -207,7 +204,6 @@
             pointer-events: none;
             z-index: 3;
         }
-        /* 左侧箭头 */
         .slider-arrow {
             position: absolute;
             top: 50%;
@@ -246,7 +242,6 @@
         .slider-arrow.right {
             right: 8px;
         }
-        /* 左侧指示点 */
         .slider-dots {
             position: absolute;
             bottom: 12px;
@@ -277,7 +272,6 @@
             box-shadow: 0 0 12px rgba(232, 184, 74, 0.3);
         }
 
-        /* 右侧视频区域 */
         .video-container {
             flex: 1;
             position: relative;
@@ -300,7 +294,6 @@
             padding: 20px;
         }
 
-        /* 下方信息栏（索引 + 描述滚动 + 按钮） */
         .unit-info {
             flex: 0 0 auto;
             background: #111a24;
@@ -400,7 +393,6 @@
             display: none !important;
         }
 
-        /* 响应式：小屏幕堆叠 */
         @media (max-width: 640px) {
             .media-container {
                 flex-direction: column;
@@ -512,7 +504,6 @@
                     <div>暂无数据</div>
                     <div style="font-size:12px;color:#3a4a5a;">请检查 data.js 是否存在</div>
                 </div>
-                <!-- 媒体容器：左侧图像，右侧视频 -->
                 <div class="media-container hidden" id="mediaContainer">
                     <div class="unit-slider" id="unitSlider">
                         <div class="slider-track" id="sliderTrack"></div>
@@ -525,7 +516,6 @@
                         <div class="no-video hidden" id="noVideoMsg">📹 无视频</div>
                     </div>
                 </div>
-                <!-- 底部信息栏 -->
                 <div class="unit-info hidden" id="unitInfo">
                     <span class="unit-index" id="unitIndex">0 / 0</span>
                     <div class="unit-desc-wrapper">
@@ -559,19 +549,19 @@
             let currentFaction = '盟军';
             let currentGiftKey = null;
             let currentGiftData = null;
+            let currentGiftList = [];
+            let currentGiftIndex = 0;
             let unitList = [];
             let unitIndexPos = 0;
             let imageList = [];
             let imageIndexPos = 0;
 
-            // 定时器相关
-            let unitTimer = null; // 切换单位的定时器 (duration 后触发)
-            let imageTimer = null; // 切换图片的定时器 (间隔)
+            let unitTimer = null;
+            let imageTimer = null;
             let isAutoPaused = false;
             let pauseTimeout = null;
             const PAUSE_RESUME_DELAY = 5000;
 
-            // DOM 引用
             const $ = id => document.getElementById(id);
             const giftNav = $('giftNav'),
                 sidebar = $('sidebar'),
@@ -591,7 +581,6 @@
                 unitPrev = $('unitPrev'),
                 unitNext = $('unitNext');
 
-            // 获取礼物列表（顺序同 data.js）
             function getGifts(faction) {
                 const fd = allData[faction];
                 if (!fd) return [];
@@ -614,9 +603,9 @@
                 return [];
             }
 
-            // 渲染礼物导航
             function renderGiftNav(faction) {
                 const gifts = getGifts(faction);
+                currentGiftList = gifts;
                 if (!gifts.length) {
                     giftNav.innerHTML =
                         `<span style="color:#4a5a6e;font-size:13px;flex:1;text-align:center;">该阵营暂无礼物</span>`;
@@ -626,6 +615,7 @@
                 if (idx === -1) idx = 0;
                 currentGiftKey = gifts[idx].key;
                 currentGiftData = gifts[idx];
+                currentGiftIndex = idx;
 
                 const prev = gifts[idx - 1] || null,
                     next = gifts[idx + 1] || null;
@@ -644,8 +634,9 @@
                             if (gd) {
                                 currentGiftKey = key;
                                 currentGiftData = gd;
+                                // 手动切换礼物，停止当前周期并重新渲染
+                                stopUnitCycle();
                                 renderGiftNav(faction);
-                                renderUnitDisplay(faction, gd);
                                 pauseAuto('gift');
                             }
                         }
@@ -661,7 +652,6 @@
                 }
             }
 
-            // 渲染单位展示（初始化媒体容器）
             function renderUnitDisplay(faction, giftData) {
                 const units = giftData?.units || [];
                 unitList = units;
@@ -676,17 +666,14 @@
                 mediaContainer.classList.remove('hidden');
                 unitInfo.classList.remove('hidden');
                 showUnit(0, faction);
-                // 自动播放由 showUnit 内部的 startUnitCycle 启动
             }
 
-            // 显示指定单位
             function showUnit(index, faction) {
                 if (!unitList.length) return;
                 const idx = Math.max(0, Math.min(index, unitList.length - 1));
                 unitIndexPos = idx;
                 const unit = unitList[idx];
 
-                // 更新索引和描述
                 unitIndex.textContent = `${idx + 1} / ${unitList.length}`;
                 const descText = unit.description || '暂无描述';
                 unitDesc.textContent = descText;
@@ -704,12 +691,10 @@
                     }
                 });
 
-                // 更新图片列表
                 const images = getUnitImages(unit, faction);
                 imageList = images;
                 imageIndexPos = 0;
 
-                // 构建图片幻灯片
                 if (!imageList.length) {
                     sliderTrack.innerHTML = `
                         <div class="slide">
@@ -754,68 +739,53 @@
                     sliderNext.classList.toggle('hidden', !multi);
                 }
 
-                // 处理视频
                 if (unit.video) {
-                    const videoPath = `视频/${unit.video}`; // 视频放在 "视频/" 文件夹
+                    const videoPath = `视频/${unit.video}`;
                     unitVideo.src = videoPath;
                     unitVideo.load();
                     noVideoMsg.classList.add('hidden');
                     unitVideo.classList.remove('hidden');
-                    // 监听视频加载完成以获取时长
                     unitVideo.onloadedmetadata = () => {
-                        // 启动当前单位的周期
                         startUnitCycle(unit, faction);
                     };
                     unitVideo.onerror = () => {
-                        // 视频加载失败，使用默认时长 8 秒
                         console.warn('视频加载失败，使用默认时长8秒');
                         startUnitCycle(unit, faction, 8);
                     };
                 } else {
-                    // 无视频，使用默认时长 8 秒
                     unitVideo.classList.add('hidden');
                     noVideoMsg.classList.remove('hidden');
                     startUnitCycle(unit, faction, 8);
                 }
 
-                // 更新导航按钮状态
                 unitPrev.classList.toggle('disabled', idx === 0);
                 unitNext.classList.toggle('disabled', idx === unitList.length - 1);
             }
 
-            // 启动当前单位的周期（视频 + 图片定时切换）
             function startUnitCycle(unit, faction, fallbackDuration) {
-                // 清除之前的定时器
                 stopUnitCycle();
 
-                // 获取视频时长
-                let duration = fallbackDuration || 8; // 默认8秒
+                let duration = fallbackDuration || 8;
                 if (unit.video && unitVideo.readyState >= 1 && unitVideo.duration) {
                     duration = unitVideo.duration;
                 }
-                // 保证至少1秒
                 duration = Math.max(duration, 1);
 
                 const totalImages = imageList.length;
                 if (totalImages === 0) {
-                    // 没有图片，仅设置单位切换定时器
                     unitTimer = setTimeout(() => {
                         if (!isAutoPaused) {
-                            nextUnit();
+                            nextUnit(true);
                         }
                     }, duration * 1000);
-                    // 没有图片定时器
                     return;
                 }
 
-                // 计算每张图片显示时间（毫秒）
                 const interval = (duration * 1000) / totalImages;
-                // 启动图片定时器，不断切换图片
                 let imgIndex = 0;
                 imageIndexPos = 0;
                 updateSliderPosition(0);
 
-                // 先清除可能存在的旧 imageTimer
                 if (imageTimer) clearInterval(imageTimer);
                 imageTimer = setInterval(() => {
                     if (isAutoPaused) return;
@@ -824,35 +794,27 @@
                     updateSliderPosition(imgIndex);
                 }, interval);
 
-                // 启动单位切换定时器（duration 后切换）
                 if (unitTimer) clearTimeout(unitTimer);
                 unitTimer = setTimeout(() => {
                     if (!isAutoPaused) {
-                        nextUnit();
+                        nextUnit(true);
                     }
                 }, duration * 1000);
 
-                // 播放视频
-                if (unit.video && !unitVideo.paused) {
-                    // 如果已播放，重播
+                if (unit.video) {
                     unitVideo.currentTime = 0;
-                    unitVideo.play().catch(e => console.warn('视频自动播放被阻止', e));
-                } else if (unit.video) {
                     unitVideo.play().catch(e => console.warn('视频自动播放被阻止', e));
                 }
             }
 
-            // 停止当前单位周期（清除所有定时器）
             function stopUnitCycle() {
                 if (unitTimer) { clearTimeout(unitTimer);
                     unitTimer = null; }
                 if (imageTimer) { clearInterval(imageTimer);
                     imageTimer = null; }
-                // 暂停视频（但不重置）
                 unitVideo.pause();
             }
 
-            // 更新滑块位置（图片轮播）
             function updateSliderPosition(index) {
                 const total = imageList.length;
                 if (!total) return;
@@ -862,7 +824,6 @@
                 sliderDots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
             }
 
-            // 手动跳转到指定图片（会暂停自动）
             function goToImage(index) {
                 if (imageList.length) {
                     updateSliderPosition(index);
@@ -870,43 +831,74 @@
                 }
             }
 
-            // 手动切换单位
-            function nextUnit() {
+            // ===== 核心修改：单位切换 + 礼物自动切换 =====
+            function nextUnit(auto = false) {
                 if (!unitList.length) return;
-                const n = (unitIndexPos + 1) % unitList.length;
-                showUnit(n, currentFaction);
-                pauseAuto('unit');
+                // 检查是否最后一个单位
+                if (unitIndexPos === unitList.length - 1) {
+                    // 切换到下一个礼物
+                    nextGift();
+                } else {
+                    const n = unitIndexPos + 1;
+                    showUnit(n, currentFaction);
+                    if (!auto) pauseAuto('unit');
+                }
             }
 
             function prevUnit() {
                 if (!unitList.length) return;
-                const n = (unitIndexPos - 1 + unitList.length) % unitList.length;
-                showUnit(n, currentFaction);
-                pauseAuto('unit');
+                if (unitIndexPos === 0) {
+                    prevGift();
+                } else {
+                    const n = unitIndexPos - 1;
+                    showUnit(n, currentFaction);
+                    pauseAuto('unit');
+                }
             }
 
-            // 自动播放控制
+            function nextGift() {
+                if (!currentGiftList.length) return;
+                const nextIdx = (currentGiftIndex + 1) % currentGiftList.length;
+                // 如果循环到第一个，继续（无限循环）
+                const newGift = currentGiftList[nextIdx];
+                currentGiftKey = newGift.key;
+                currentGiftData = newGift;
+                currentGiftIndex = nextIdx;
+                // 停止当前周期，重新渲染礼物导航（会自动重置单位）
+                stopUnitCycle();
+                renderGiftNav(currentFaction);
+                // 自动切换不暂停，直接继续
+            }
+
+            function prevGift() {
+                if (!currentGiftList.length) return;
+                const prevIdx = (currentGiftIndex - 1 + currentGiftList.length) % currentGiftList.length;
+                const newGift = currentGiftList[prevIdx];
+                currentGiftKey = newGift.key;
+                currentGiftData = newGift;
+                currentGiftIndex = prevIdx;
+                stopUnitCycle();
+                renderGiftNav(currentFaction);
+                pauseAuto('gift');
+            }
+
             function pauseAuto(source) {
                 if (!isAutoPaused) {
                     isAutoPaused = true;
-                    // 暂停视频（但保留当前时间）
                     unitVideo.pause();
                 }
                 if (pauseTimeout) clearTimeout(pauseTimeout);
                 pauseTimeout = setTimeout(() => {
                     isAutoPaused = false;
                     pauseTimeout = null;
-                    // 恢复当前单位周期（重新开始当前单位）
                     const unit = unitList[unitIndexPos];
                     if (unit) {
-                        // 重新加载视频和图片周期
                         stopUnitCycle();
                         startUnitCycle(unit, currentFaction);
                     }
                 }, PAUSE_RESUME_DELAY);
             }
 
-            // 切换阵营
             function switchFaction(faction) {
                 if (faction === currentFaction) return;
                 currentFaction = faction;
@@ -934,8 +926,8 @@
                     goToImage(imageIndexPos + 1);
                 }
             });
-            unitPrev.addEventListener('click', prevUnit);
-            unitNext.addEventListener('click', nextUnit);
+            unitPrev.addEventListener('click', function() { prevUnit(); });
+            unitNext.addEventListener('click', function() { nextUnit(false); });
 
             // 启动
             renderGiftNav(currentFaction);

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>巴顿弹幕英雄连2 · 图鉴</title>
+    <title>巴顿弹幕英雄连2 · 图鉴 (测试版二)</title>
     <style>
-        /* === 全局重置 === */
+        /* 全局重置同前，只修改布局相关 */
         *,
         *::before,
         *::after {
@@ -39,7 +39,6 @@
             overflow: hidden;
             background: #0b0e14;
         }
-        /* 左侧阵营 */
         .sidebar {
             flex: 0 0 56px;
             min-width: 56px;
@@ -95,7 +94,6 @@
             min-width: 0;
             background: #0f1822;
         }
-        /* 礼物导航 */
         .gift-nav {
             flex: 0 0 auto;
             background: #111a24;
@@ -139,7 +137,7 @@
             border-right-color: transparent;
         }
 
-        /* 单位展示 */
+        /* 单位展示：左右两栏 */
         .unit-display {
             flex: 1;
             display: flex;
@@ -148,11 +146,19 @@
             background: #0b111a;
             overflow: hidden;
         }
+        .media-container {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+            background: #070c14;
+        }
+        /* 左侧图像区域 */
         .unit-slider {
             flex: 1;
             position: relative;
-            background: #070c14;
             overflow: hidden;
+            background: #070c14;
+            min-width: 0;
         }
         .slider-track {
             display: flex;
@@ -168,7 +174,6 @@
             background: #070c14;
             position: relative;
         }
-        /* 图片 cover 裁剪 */
         .slider-track .slide img {
             width: 100%;
             height: 100%;
@@ -186,8 +191,7 @@
             background: #0d141d;
             font-weight: 300;
         }
-
-        /* 单位名称浮在图片上 */
+        /* 单位名称浮在左侧图片上 */
         .unit-name-overlay {
             position: absolute;
             bottom: 0;
@@ -203,8 +207,7 @@
             pointer-events: none;
             z-index: 3;
         }
-
-        /* 图片箭头 */
+        /* 左侧箭头 */
         .slider-arrow {
             position: absolute;
             top: 50%;
@@ -225,7 +228,7 @@
             opacity: 0;
             pointer-events: none;
         }
-        .unit-display:hover .slider-arrow {
+        .media-container:hover .slider-arrow {
             opacity: 0.7;
             pointer-events: auto;
         }
@@ -243,8 +246,7 @@
         .slider-arrow.right {
             right: 8px;
         }
-
-        /* 图片指示点 */
+        /* 左侧指示点 */
         .slider-dots {
             position: absolute;
             bottom: 12px;
@@ -275,7 +277,30 @@
             box-shadow: 0 0 12px rgba(232, 184, 74, 0.3);
         }
 
-        /* 下方信息栏（只保留索引和描述，描述滚动） */
+        /* 右侧视频区域 */
+        .video-container {
+            flex: 1;
+            position: relative;
+            background: #070c14;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
+        .video-container .no-video {
+            color: #4a5a6e;
+            font-size: 18px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* 下方信息栏（索引 + 描述滚动 + 按钮） */
         .unit-info {
             flex: 0 0 auto;
             background: #111a24;
@@ -297,7 +322,6 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
-        /* 描述滚动容器 */
         .unit-desc-wrapper {
             flex: 1;
             overflow: hidden;
@@ -312,7 +336,6 @@
             color: #c6d4e3;
             font-weight: 500;
         }
-        /* 当文本较短时，取消滚动，居中显示 */
         .unit-desc-scroll.no-scroll {
             animation: none;
             padding-left: 0;
@@ -377,8 +400,16 @@
             display: none !important;
         }
 
-        /* 响应式微调 */
+        /* 响应式：小屏幕堆叠 */
         @media (max-width: 640px) {
+            .media-container {
+                flex-direction: column;
+            }
+            .unit-slider,
+            .video-container {
+                flex: 1;
+                min-height: 0;
+            }
             .sidebar {
                 flex: 0 0 48px;
                 min-width: 48px;
@@ -481,12 +512,20 @@
                     <div>暂无数据</div>
                     <div style="font-size:12px;color:#3a4a5a;">请检查 data.js 是否存在</div>
                 </div>
-                <div class="unit-slider hidden" id="unitSlider">
-                    <div class="slider-track" id="sliderTrack"></div>
-                    <button class="slider-arrow left" id="sliderPrev">‹</button>
-                    <button class="slider-arrow right" id="sliderNext">›</button>
-                    <div class="slider-dots" id="sliderDots"></div>
+                <!-- 媒体容器：左侧图像，右侧视频 -->
+                <div class="media-container hidden" id="mediaContainer">
+                    <div class="unit-slider" id="unitSlider">
+                        <div class="slider-track" id="sliderTrack"></div>
+                        <button class="slider-arrow left" id="sliderPrev">‹</button>
+                        <button class="slider-arrow right" id="sliderNext">›</button>
+                        <div class="slider-dots" id="sliderDots"></div>
+                    </div>
+                    <div class="video-container" id="videoContainer">
+                        <video id="unitVideo" muted autoplay playsinline></video>
+                        <div class="no-video hidden" id="noVideoMsg">📹 无视频</div>
+                    </div>
                 </div>
+                <!-- 底部信息栏 -->
                 <div class="unit-info hidden" id="unitInfo">
                     <span class="unit-index" id="unitIndex">0 / 0</span>
                     <div class="unit-desc-wrapper">
@@ -524,29 +563,35 @@
             let unitIndexPos = 0;
             let imageList = [];
             let imageIndexPos = 0;
-            let autoTimer = null,
-                imageTimer = null;
-            let isAutoPaused = false,
-                pauseTimeout = null;
-            const UNIT_INTERVAL = 6000,
-                IMAGE_INTERVAL = 3200,
-                PAUSE_RESUME_DELAY = 5000;
 
+            // 定时器相关
+            let unitTimer = null; // 切换单位的定时器 (duration 后触发)
+            let imageTimer = null; // 切换图片的定时器 (间隔)
+            let isAutoPaused = false;
+            let pauseTimeout = null;
+            const PAUSE_RESUME_DELAY = 5000;
+
+            // DOM 引用
             const $ = id => document.getElementById(id);
             const giftNav = $('giftNav'),
                 sidebar = $('sidebar'),
-                emptyState = $('emptyState'),
-                unitSlider = $('unitSlider'),
+                emptyState = $('emptyState');
+            const mediaContainer = $('mediaContainer');
+            const unitSlider = $('unitSlider'),
                 sliderTrack = $('sliderTrack'),
                 sliderDots = $('sliderDots'),
                 sliderPrev = $('sliderPrev'),
-                sliderNext = $('sliderNext'),
-                unitInfo = $('unitInfo'),
+                sliderNext = $('sliderNext');
+            const videoContainer = $('videoContainer'),
+                unitVideo = $('unitVideo'),
+                noVideoMsg = $('noVideoMsg');
+            const unitInfo = $('unitInfo'),
                 unitIndex = $('unitIndex'),
                 unitDesc = $('unitDesc'),
                 unitPrev = $('unitPrev'),
                 unitNext = $('unitNext');
 
+            // 获取礼物列表（顺序同 data.js）
             function getGifts(faction) {
                 const fd = allData[faction];
                 if (!fd) return [];
@@ -569,6 +614,7 @@
                 return [];
             }
 
+            // 渲染礼物导航
             function renderGiftNav(faction) {
                 const gifts = getGifts(faction);
                 if (!gifts.length) {
@@ -615,57 +661,55 @@
                 }
             }
 
+            // 渲染单位展示（初始化媒体容器）
             function renderUnitDisplay(faction, giftData) {
                 const units = giftData?.units || [];
                 unitList = units;
                 unitIndexPos = 0;
                 if (!unitList.length) {
                     emptyState.classList.remove('hidden');
-                    unitSlider.classList.add('hidden');
+                    mediaContainer.classList.add('hidden');
                     unitInfo.classList.add('hidden');
                     return;
                 }
                 emptyState.classList.add('hidden');
-                unitSlider.classList.remove('hidden');
+                mediaContainer.classList.remove('hidden');
                 unitInfo.classList.remove('hidden');
                 showUnit(0, faction);
-                startAutoPlay();
+                // 自动播放由 showUnit 内部的 startUnitCycle 启动
             }
 
+            // 显示指定单位
             function showUnit(index, faction) {
                 if (!unitList.length) return;
                 const idx = Math.max(0, Math.min(index, unitList.length - 1));
                 unitIndexPos = idx;
                 const unit = unitList[idx];
 
-                // 更新索引
+                // 更新索引和描述
                 unitIndex.textContent = `${idx + 1} / ${unitList.length}`;
-
-                // 更新描述（滚动效果）
                 const descText = unit.description || '暂无描述';
                 unitDesc.textContent = descText;
-                // 根据文本长度决定是否滚动（超过容器宽度则滚动）
-                // 通过检测 scrollWidth 与 clientWidth 比较，但需要先设置内容再测量
-                // 使用 requestAnimationFrame 确保渲染
                 requestAnimationFrame(() => {
                     const wrapper = unitDesc.parentElement;
                     const scrollWidth = unitDesc.scrollWidth;
                     const clientWidth = wrapper.clientWidth;
                     if (scrollWidth > clientWidth) {
                         unitDesc.classList.remove('no-scroll');
-                        // 重置动画
                         unitDesc.style.animation = 'none';
-                        void unitDesc.offsetHeight; // 触发回流
+                        void unitDesc.offsetHeight;
                         unitDesc.style.animation = '';
                     } else {
                         unitDesc.classList.add('no-scroll');
                     }
                 });
 
-                // 更新图片
+                // 更新图片列表
                 const images = getUnitImages(unit, faction);
                 imageList = images;
                 imageIndexPos = 0;
+
+                // 构建图片幻灯片
                 if (!imageList.length) {
                     sliderTrack.innerHTML = `
                         <div class="slide">
@@ -676,46 +720,139 @@
                     sliderDots.innerHTML = '';
                     sliderPrev.classList.add('hidden');
                     sliderNext.classList.add('hidden');
-                    return;
-                }
-                let slides = '';
-                for (const src of imageList) {
-                    const fallback = (unit.name && unit.name.length) ? unit.name.charAt(0) : '?';
-                    slides += `
-                        <div class="slide">
-                            <img src="${src}" alt="${unit.name}" loading="lazy" 
-                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                            <div class="fallback-text" style="display:none;">${fallback}</div>
-                            <div class="unit-name-overlay">${unit.name || '未命名'}</div>
-                        </div>
-                    `;
-                }
-                sliderTrack.innerHTML = slides;
-                updateSliderPosition(0);
-
-                // 指示点
-                let dots = '';
-                for (let i = 0; i < imageList.length; i++) {
-                    dots += `<button class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></button>`;
-                }
-                sliderDots.innerHTML = dots;
-                sliderDots.querySelectorAll('.dot').forEach(d => {
-                    d.addEventListener('click', function() {
-                        const idx = parseInt(this.dataset.index, 10);
-                        if (!isNaN(idx) && idx !== imageIndexPos) { goToImage(idx);
-                            pauseAuto('dot'); }
+                } else {
+                    let slides = '';
+                    for (const src of imageList) {
+                        const fallback = (unit.name && unit.name.length) ? unit.name.charAt(0) : '?';
+                        slides += `
+                            <div class="slide">
+                                <img src="${src}" alt="${unit.name}" loading="lazy" 
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="fallback-text" style="display:none;">${fallback}</div>
+                                <div class="unit-name-overlay">${unit.name || '未命名'}</div>
+                            </div>
+                        `;
+                    }
+                    sliderTrack.innerHTML = slides;
+                    updateSliderPosition(0);
+                    let dots = '';
+                    for (let i = 0; i < imageList.length; i++) {
+                        dots += `<button class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></button>`;
+                    }
+                    sliderDots.innerHTML = dots;
+                    sliderDots.querySelectorAll('.dot').forEach(d => {
+                        d.addEventListener('click', function() {
+                            const idx = parseInt(this.dataset.index, 10);
+                            if (!isNaN(idx) && idx !== imageIndexPos) {
+                                goToImage(idx);
+                                pauseAuto('dot');
+                            }
+                        });
                     });
-                });
-                const multi = imageList.length > 1;
-                sliderPrev.classList.toggle('hidden', !multi);
-                sliderNext.classList.toggle('hidden', !multi);
-                resetImageTimer();
+                    const multi = imageList.length > 1;
+                    sliderPrev.classList.toggle('hidden', !multi);
+                    sliderNext.classList.toggle('hidden', !multi);
+                }
+
+                // 处理视频
+                if (unit.video) {
+                    const videoPath = `视频/${unit.video}`; // 视频放在 "视频/" 文件夹
+                    unitVideo.src = videoPath;
+                    unitVideo.load();
+                    noVideoMsg.classList.add('hidden');
+                    unitVideo.classList.remove('hidden');
+                    // 监听视频加载完成以获取时长
+                    unitVideo.onloadedmetadata = () => {
+                        // 启动当前单位的周期
+                        startUnitCycle(unit, faction);
+                    };
+                    unitVideo.onerror = () => {
+                        // 视频加载失败，使用默认时长 8 秒
+                        console.warn('视频加载失败，使用默认时长8秒');
+                        startUnitCycle(unit, faction, 8);
+                    };
+                } else {
+                    // 无视频，使用默认时长 8 秒
+                    unitVideo.classList.add('hidden');
+                    noVideoMsg.classList.remove('hidden');
+                    startUnitCycle(unit, faction, 8);
+                }
 
                 // 更新导航按钮状态
                 unitPrev.classList.toggle('disabled', idx === 0);
                 unitNext.classList.toggle('disabled', idx === unitList.length - 1);
             }
 
+            // 启动当前单位的周期（视频 + 图片定时切换）
+            function startUnitCycle(unit, faction, fallbackDuration) {
+                // 清除之前的定时器
+                stopUnitCycle();
+
+                // 获取视频时长
+                let duration = fallbackDuration || 8; // 默认8秒
+                if (unit.video && unitVideo.readyState >= 1 && unitVideo.duration) {
+                    duration = unitVideo.duration;
+                }
+                // 保证至少1秒
+                duration = Math.max(duration, 1);
+
+                const totalImages = imageList.length;
+                if (totalImages === 0) {
+                    // 没有图片，仅设置单位切换定时器
+                    unitTimer = setTimeout(() => {
+                        if (!isAutoPaused) {
+                            nextUnit();
+                        }
+                    }, duration * 1000);
+                    // 没有图片定时器
+                    return;
+                }
+
+                // 计算每张图片显示时间（毫秒）
+                const interval = (duration * 1000) / totalImages;
+                // 启动图片定时器，不断切换图片
+                let imgIndex = 0;
+                imageIndexPos = 0;
+                updateSliderPosition(0);
+
+                // 先清除可能存在的旧 imageTimer
+                if (imageTimer) clearInterval(imageTimer);
+                imageTimer = setInterval(() => {
+                    if (isAutoPaused) return;
+                    imgIndex = (imgIndex + 1) % totalImages;
+                    imageIndexPos = imgIndex;
+                    updateSliderPosition(imgIndex);
+                }, interval);
+
+                // 启动单位切换定时器（duration 后切换）
+                if (unitTimer) clearTimeout(unitTimer);
+                unitTimer = setTimeout(() => {
+                    if (!isAutoPaused) {
+                        nextUnit();
+                    }
+                }, duration * 1000);
+
+                // 播放视频
+                if (unit.video && !unitVideo.paused) {
+                    // 如果已播放，重播
+                    unitVideo.currentTime = 0;
+                    unitVideo.play().catch(e => console.warn('视频自动播放被阻止', e));
+                } else if (unit.video) {
+                    unitVideo.play().catch(e => console.warn('视频自动播放被阻止', e));
+                }
+            }
+
+            // 停止当前单位周期（清除所有定时器）
+            function stopUnitCycle() {
+                if (unitTimer) { clearTimeout(unitTimer);
+                    unitTimer = null; }
+                if (imageTimer) { clearInterval(imageTimer);
+                    imageTimer = null; }
+                // 暂停视频（但不重置）
+                unitVideo.pause();
+            }
+
+            // 更新滑块位置（图片轮播）
             function updateSliderPosition(index) {
                 const total = imageList.length;
                 if (!total) return;
@@ -725,72 +862,78 @@
                 sliderDots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
             }
 
-            function goToImage(index) { if (imageList.length) { updateSliderPosition(index);
-                    pauseAuto('image'); } }
-
-            function nextImage() { if (imageList.length) goToImage(imageIndexPos + 1); }
-
-            function prevImage() { if (imageList.length) goToImage(imageIndexPos - 1); }
-
-            function nextUnit() { if (unitList.length) { const n = (unitIndexPos + 1) % unitList.length;
-                    showUnit(n, currentFaction);
-                    pauseAuto('unit'); } }
-
-            function prevUnit() { if (unitList.length) { const n = (unitIndexPos - 1 + unitList.length) % unitList.length;
-                    showUnit(n, currentFaction);
-                    pauseAuto('unit'); } }
-
-            function startAutoPlay() {
-                stopAutoPlay();
-                isAutoPaused = false;
-                autoTimer = setInterval(() => { if (!isAutoPaused && unitList.length > 1) nextUnit(); }, UNIT_INTERVAL);
-                imageTimer = setInterval(() => { if (!isAutoPaused && imageList.length > 1) nextImage(); },
-                    IMAGE_INTERVAL);
-            }
-
-            function stopAutoPlay() {
-                if (autoTimer) { clearInterval(autoTimer);
-                    autoTimer = null; }
-                if (imageTimer) { clearInterval(imageTimer);
-                    imageTimer = null; }
-                if (pauseTimeout) { clearTimeout(pauseTimeout);
-                    pauseTimeout = null; }
-                isAutoPaused = false;
-            }
-
-            function pauseAuto() {
-                if (!isAutoPaused) isAutoPaused = true;
-                if (pauseTimeout) clearTimeout(pauseTimeout);
-                pauseTimeout = setTimeout(() => { isAutoPaused = false;
-                    pauseTimeout = null; if (!autoTimer || !imageTimer) startAutoPlay(); }, PAUSE_RESUME_DELAY);
-            }
-
-            function resetImageTimer() {
-                if (imageTimer) { clearInterval(imageTimer);
-                    imageTimer = null; }
-                if (!isAutoPaused && imageList.length > 1) {
-                    imageTimer = setInterval(() => { if (!isAutoPaused && imageList.length > 1) nextImage(); },
-                        IMAGE_INTERVAL);
+            // 手动跳转到指定图片（会暂停自动）
+            function goToImage(index) {
+                if (imageList.length) {
+                    updateSliderPosition(index);
+                    pauseAuto('image');
                 }
             }
 
+            // 手动切换单位
+            function nextUnit() {
+                if (!unitList.length) return;
+                const n = (unitIndexPos + 1) % unitList.length;
+                showUnit(n, currentFaction);
+                pauseAuto('unit');
+            }
+
+            function prevUnit() {
+                if (!unitList.length) return;
+                const n = (unitIndexPos - 1 + unitList.length) % unitList.length;
+                showUnit(n, currentFaction);
+                pauseAuto('unit');
+            }
+
+            // 自动播放控制
+            function pauseAuto(source) {
+                if (!isAutoPaused) {
+                    isAutoPaused = true;
+                    // 暂停视频（但保留当前时间）
+                    unitVideo.pause();
+                }
+                if (pauseTimeout) clearTimeout(pauseTimeout);
+                pauseTimeout = setTimeout(() => {
+                    isAutoPaused = false;
+                    pauseTimeout = null;
+                    // 恢复当前单位周期（重新开始当前单位）
+                    const unit = unitList[unitIndexPos];
+                    if (unit) {
+                        // 重新加载视频和图片周期
+                        stopUnitCycle();
+                        startUnitCycle(unit, currentFaction);
+                    }
+                }, PAUSE_RESUME_DELAY);
+            }
+
+            // 切换阵营
             function switchFaction(faction) {
                 if (faction === currentFaction) return;
                 currentFaction = faction;
                 sidebar.querySelectorAll('.faction-btn').forEach(b => b.classList.toggle('active', b.dataset.faction ===
                     faction));
-                stopAutoPlay();
+                stopUnitCycle();
+                isAutoPaused = false;
+                if (pauseTimeout) clearTimeout(pauseTimeout);
                 currentGiftKey = null;
                 currentGiftData = null;
                 renderGiftNav(faction);
             }
 
-            // 事件绑定（无键盘）
+            // 事件绑定
             sidebar.querySelectorAll('.faction-btn').forEach(btn => {
                 btn.addEventListener('click', function() { switchFaction(this.dataset.faction); });
             });
-            sliderPrev.addEventListener('click', prevImage);
-            sliderNext.addEventListener('click', nextImage);
+            sliderPrev.addEventListener('click', function() {
+                if (imageList.length) {
+                    goToImage(imageIndexPos - 1);
+                }
+            });
+            sliderNext.addEventListener('click', function() {
+                if (imageList.length) {
+                    goToImage(imageIndexPos + 1);
+                }
+            });
             unitPrev.addEventListener('click', prevUnit);
             unitNext.addEventListener('click', nextUnit);
 

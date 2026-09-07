@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>巴顿弹幕英雄连2图鉴</title>
+    <title>巴顿弹幕英雄连2 · 图鉴</title>
     <style>
-        /* 样式与之前完全一致，无额外改动 */
+        /* === 全局重置 === */
         *,
         *::before,
         *::after {
@@ -39,6 +39,7 @@
             overflow: hidden;
             background: #0b0e14;
         }
+        /* 左侧阵营 */
         .sidebar {
             flex: 0 0 56px;
             min-width: 56px;
@@ -94,6 +95,7 @@
             min-width: 0;
             background: #0f1822;
         }
+        /* 礼物导航 */
         .gift-nav {
             flex: 0 0 auto;
             background: #111a24;
@@ -137,6 +139,7 @@
             border-right-color: transparent;
         }
 
+        /* 单位展示 */
         .unit-display {
             flex: 1;
             display: flex;
@@ -163,11 +166,13 @@
             align-items: center;
             justify-content: center;
             background: #070c14;
+            position: relative;
         }
+        /* 图片 cover 裁剪 */
         .slider-track .slide img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             background: #070c14;
         }
         .slider-track .slide .fallback-text {
@@ -181,6 +186,25 @@
             background: #0d141d;
             font-weight: 300;
         }
+
+        /* 单位名称浮在图片上 */
+        .unit-name-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* 图片箭头 */
         .slider-arrow {
             position: absolute;
             top: 50%;
@@ -219,6 +243,8 @@
         .slider-arrow.right {
             right: 8px;
         }
+
+        /* 图片指示点 */
         .slider-dots {
             position: absolute;
             bottom: 12px;
@@ -249,51 +275,64 @@
             box-shadow: 0 0 12px rgba(232, 184, 74, 0.3);
         }
 
+        /* 下方信息栏（只保留索引和描述，描述滚动） */
         .unit-info {
             flex: 0 0 auto;
             background: #111a24;
             border-top: 1px solid #1f2b38;
             padding: 8px 16px 10px;
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
-            gap: 4px 12px;
-            min-height: 56px;
-        }
-        .unit-info .name-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1 1 auto;
-            min-width: 120px;
-        }
-        .unit-info .unit-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: #f0e8d0;
+            gap: 12px;
+            min-height: 48px;
+            overflow: hidden;
         }
         .unit-info .unit-index {
-            font-size: 12px;
+            font-size: 13px;
             color: #6a7f98;
             background: #1a2532;
-            padding: 1px 10px;
+            padding: 2px 12px;
             border-radius: 20px;
             border: 1px solid #2a3a4e;
-        }
-        .unit-info .unit-desc {
-            flex: 2 1 200px;
-            font-size: 13px;
-            color: #a0b8cf;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            flex-shrink: 0;
         }
+        /* 描述滚动容器 */
+        .unit-desc-wrapper {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        .unit-desc-scroll {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 12s linear infinite;
+            font-size: 16px;
+            color: #c6d4e3;
+            font-weight: 500;
+        }
+        /* 当文本较短时，取消滚动，居中显示 */
+        .unit-desc-scroll.no-scroll {
+            animation: none;
+            padding-left: 0;
+            display: block;
+            text-align: center;
+        }
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
         .unit-info .unit-nav {
             display: flex;
             align-items: center;
             gap: 4px;
-            flex: 0 0 auto;
-            margin-left: auto;
+            flex-shrink: 0;
         }
         .unit-info .unit-nav .nav-btn {
             width: 30px;
@@ -338,6 +377,7 @@
             display: none !important;
         }
 
+        /* 响应式微调 */
         @media (max-width: 640px) {
             .sidebar {
                 flex: 0 0 48px;
@@ -363,21 +403,20 @@
             }
             .unit-info {
                 padding: 6px 10px 8px;
-                min-height: 48px;
+                min-height: 40px;
+                gap: 8px;
             }
-            .unit-info .unit-name {
-                font-size: 14px;
-            }
-            .unit-info .unit-desc {
+            .unit-info .unit-index {
                 font-size: 11px;
-                white-space: normal;
-                max-height: 32px;
-                overflow: hidden;
+                padding: 1px 8px;
             }
-            .unit-info .unit-nav .nav-btn {
-                width: 26px;
-                height: 26px;
-                font-size: 12px;
+            .unit-desc-scroll {
+                font-size: 14px;
+                animation-duration: 10s;
+            }
+            .unit-name-overlay {
+                font-size: 16px;
+                padding: 8px 12px;
             }
             .slider-arrow {
                 width: 28px;
@@ -400,6 +439,20 @@
             .slider-dots .dot {
                 width: 6px;
                 height: 6px;
+            }
+            .unit-info .unit-nav .nav-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+        }
+        @media (max-width: 400px) {
+            .unit-desc-scroll {
+                font-size: 12px;
+                animation-duration: 8s;
+            }
+            .unit-name-overlay {
+                font-size: 14px;
             }
         }
     </style>
@@ -435,11 +488,10 @@
                     <div class="slider-dots" id="sliderDots"></div>
                 </div>
                 <div class="unit-info hidden" id="unitInfo">
-                    <div class="name-area">
-                        <span class="unit-name" id="unitName">—</span>
-                        <span class="unit-index" id="unitIndex">0 / 0</span>
+                    <span class="unit-index" id="unitIndex">0 / 0</span>
+                    <div class="unit-desc-wrapper">
+                        <span class="unit-desc-scroll" id="unitDesc">暂无描述</span>
                     </div>
-                    <div class="unit-desc" id="unitDesc">暂无描述</div>
                     <div class="unit-nav">
                         <button class="nav-btn" id="unitPrev">◀</button>
                         <button class="nav-btn" id="unitNext">▶</button>
@@ -455,7 +507,6 @@
         (function() {
             'use strict';
 
-            // 检查数据
             if (typeof UNIT_DATA === 'undefined') {
                 document.getElementById('giftNav').innerHTML =
                     `<span style="color:#e66767;font-size:13px;flex:1;text-align:center;">❌ data.js 未找到或格式错误</span>`;
@@ -491,18 +542,15 @@
                 sliderPrev = $('sliderPrev'),
                 sliderNext = $('sliderNext'),
                 unitInfo = $('unitInfo'),
-                unitName = $('unitName'),
                 unitIndex = $('unitIndex'),
                 unitDesc = $('unitDesc'),
                 unitPrev = $('unitPrev'),
                 unitNext = $('unitNext');
 
-            // 获取礼物列表 —— 保持 data.js 中的原始顺序（不排序）
             function getGifts(faction) {
                 const fd = allData[faction];
                 if (!fd) return [];
                 const result = [];
-                // 按分类顺序遍历：步兵、装甲、远程（维持原定义顺序）
                 for (const cat of ['步兵', '装甲', '远程']) {
                     const catData = fd[cat];
                     if (!catData) continue;
@@ -512,7 +560,6 @@
                         }
                     }
                 }
-                // 注意：没有 .sort()，保持插入顺序
                 return result;
             }
 
@@ -590,18 +637,42 @@
                 const idx = Math.max(0, Math.min(index, unitList.length - 1));
                 unitIndexPos = idx;
                 const unit = unitList[idx];
-                unitName.textContent = unit.name || '未命名';
-                unitIndex.textContent = `${idx + 1} / ${unitList.length}`;
-                unitDesc.textContent = unit.description || '暂无描述';
-                unitPrev.classList.toggle('disabled', idx === 0);
-                unitNext.classList.toggle('disabled', idx === unitList.length - 1);
 
+                // 更新索引
+                unitIndex.textContent = `${idx + 1} / ${unitList.length}`;
+
+                // 更新描述（滚动效果）
+                const descText = unit.description || '暂无描述';
+                unitDesc.textContent = descText;
+                // 根据文本长度决定是否滚动（超过容器宽度则滚动）
+                // 通过检测 scrollWidth 与 clientWidth 比较，但需要先设置内容再测量
+                // 使用 requestAnimationFrame 确保渲染
+                requestAnimationFrame(() => {
+                    const wrapper = unitDesc.parentElement;
+                    const scrollWidth = unitDesc.scrollWidth;
+                    const clientWidth = wrapper.clientWidth;
+                    if (scrollWidth > clientWidth) {
+                        unitDesc.classList.remove('no-scroll');
+                        // 重置动画
+                        unitDesc.style.animation = 'none';
+                        void unitDesc.offsetHeight; // 触发回流
+                        unitDesc.style.animation = '';
+                    } else {
+                        unitDesc.classList.add('no-scroll');
+                    }
+                });
+
+                // 更新图片
                 const images = getUnitImages(unit, faction);
                 imageList = images;
                 imageIndexPos = 0;
                 if (!imageList.length) {
-                    sliderTrack.innerHTML =
-                        `<div class="slide"><div class="fallback-text">📷 无图</div></div>`;
+                    sliderTrack.innerHTML = `
+                        <div class="slide">
+                            <div class="fallback-text">📷 无图</div>
+                            <div class="unit-name-overlay">${unit.name || '未命名'}</div>
+                        </div>
+                    `;
                     sliderDots.innerHTML = '';
                     sliderPrev.classList.add('hidden');
                     sliderNext.classList.add('hidden');
@@ -615,11 +686,14 @@
                             <img src="${src}" alt="${unit.name}" loading="lazy" 
                                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                             <div class="fallback-text" style="display:none;">${fallback}</div>
+                            <div class="unit-name-overlay">${unit.name || '未命名'}</div>
                         </div>
                     `;
                 }
                 sliderTrack.innerHTML = slides;
                 updateSliderPosition(0);
+
+                // 指示点
                 let dots = '';
                 for (let i = 0; i < imageList.length; i++) {
                     dots += `<button class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></button>`;
@@ -636,6 +710,10 @@
                 sliderPrev.classList.toggle('hidden', !multi);
                 sliderNext.classList.toggle('hidden', !multi);
                 resetImageTimer();
+
+                // 更新导航按钮状态
+                unitPrev.classList.toggle('disabled', idx === 0);
+                unitNext.classList.toggle('disabled', idx === unitList.length - 1);
             }
 
             function updateSliderPosition(index) {

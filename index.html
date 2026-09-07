@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+    <title>巴顿弹幕英雄连2图鉴</title>
+    <style>
+        /* 样式与之前完全一致，无额外改动 */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+            background: #0b0e14;
+            color: #e8edf5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            outline: none;
+            background: none;
+            color: inherit;
+        }
+        .app {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background: #0b0e14;
+        }
+        .sidebar {
+            flex: 0 0 56px;
+            min-width: 56px;
+            background: #111a24;
+            border-right: 1px solid #1f2b38;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .faction-btn {
+            flex: 1;
+            border-radius: 0;
+            background: #111a24;
+            border-bottom: 1px solid #1a2532;
+            color: #8a9eb0;
+            font-weight: 600;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            transition: 0.15s;
+            min-height: 40px;
+        }
+        .faction-btn:last-child {
+            border-bottom: none;
+        }
+        .faction-btn .icon {
+            font-size: 18px;
+        }
+        .faction-btn .label {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        .faction-btn:hover {
+            background: #1a2532;
+            color: #c8d6e5;
+        }
+        .faction-btn.active {
+            background: #1f2b3a;
+            border-left: 3px solid #e8b84a;
+            color: #fff;
+        }
+        .faction-btn.active .label {
+            color: #f5d77b;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: #0f1822;
+        }
+        .gift-nav {
+            flex: 0 0 auto;
+            background: #111a24;
+            border-bottom: 1px solid #1f2b38;
+            padding: 4px 0;
+            display: flex;
+            align-items: stretch;
+            min-height: 44px;
+        }
+        .gift-btn {
+            flex: 1;
+            padding: 6px 4px;
+            border-radius: 0;
+            background: transparent;
+            color: #6a7f98;
+            font-size: 13px;
+            font-weight: 500;
+            border-right: 1px solid #1a2532;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: 0.2s;
+        }
+        .gift-btn:last-child {
+            border-right: none;
+        }
+        .gift-btn:hover:not(.active) {
+            background: #1a2532;
+            color: #b0c8dd;
+        }
+        .gift-btn.active {
+            background: #1f2b3a;
+            color: #fff;
+            border-bottom: 2px solid #e8b84a;
+            font-weight: 600;
+        }
+        .gift-btn.invisible {
+            opacity: 0;
+            pointer-events: none;
+            border-right-color: transparent;
+        }
+
+        .unit-display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: #0b111a;
+            overflow: hidden;
+        }
+        .unit-slider {
+            flex: 1;
+            position: relative;
+            background: #070c14;
+            overflow: hidden;
+        }
+        .slider-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.4s ease;
+        }
+        .slider-track .slide {
+            flex: 0 0 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #070c14;
+        }
+        .slider-track .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #070c14;
+        }
+        .slider-track .slide .fallback-text {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5a6e;
+            font-size: 48px;
+            background: #0d141d;
+            font-weight: 300;
+        }
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #fff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .unit-display:hover .slider-arrow {
+            opacity: 0.7;
+            pointer-events: auto;
+        }
+        .slider-arrow:hover {
+            opacity: 1 !important;
+            background: rgba(232, 184, 74, 0.25);
+            border-color: #e8b84a;
+        }
+        .slider-arrow.hidden {
+            display: none;
+        }
+        .slider-arrow.left {
+            left: 8px;
+        }
+        .slider-arrow.right {
+            right: 8px;
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 12px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .slider-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            transition: 0.2s;
+            cursor: pointer;
+            padding: 0;
+        }
+        .slider-dots .dot.active {
+            background: #f5d77b;
+            transform: scale(1.25);
+            box-shadow: 0 0 12px rgba(232, 184, 74, 0.3);
+        }
+
+        .unit-info {
+            flex: 0 0 auto;
+            background: #111a24;
+            border-top: 1px solid #1f2b38;
+            padding: 8px 16px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 12px;
+            min-height: 56px;
+        }
+        .unit-info .name-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-width: 120px;
+        }
+        .unit-info .unit-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f0e8d0;
+        }
+        .unit-info .unit-index {
+            font-size: 12px;
+            color: #6a7f98;
+            background: #1a2532;
+            padding: 1px 10px;
+            border-radius: 20px;
+            border: 1px solid #2a3a4e;
+        }
+        .unit-info .unit-desc {
+            flex: 2 1 200px;
+            font-size: 13px;
+            color: #a0b8cf;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .unit-info .unit-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 0 0 auto;
+            margin-left: auto;
+        }
+        .unit-info .unit-nav .nav-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1a2532;
+            border: 1px solid #2a3a4e;
+            color: #b0c8dd;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .unit-info .unit-nav .nav-btn:hover {
+            background: #2a3a4e;
+            border-color: #4a6a8a;
+            color: #fff;
+        }
+        .unit-info .unit-nav .nav-btn.disabled {
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #4a5a6e;
+            font-size: 15px;
+            gap: 6px;
+            padding: 30px;
+            text-align: center;
+        }
+        .empty-state .big-icon {
+            font-size: 42px;
+            opacity: 0.3;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            .sidebar {
+                flex: 0 0 48px;
+                min-width: 48px;
+            }
+            .faction-btn {
+                font-size: 10px;
+                min-height: 32px;
+            }
+            .faction-btn .icon {
+                font-size: 15px;
+            }
+            .faction-btn .label {
+                font-size: 8px;
+            }
+            .gift-nav {
+                min-height: 36px;
+                padding: 2px 0;
+            }
+            .gift-btn {
+                font-size: 11px;
+                padding: 4px 2px;
+            }
+            .unit-info {
+                padding: 6px 10px 8px;
+                min-height: 48px;
+            }
+            .unit-info .unit-name {
+                font-size: 14px;
+            }
+            .unit-info .unit-desc {
+                font-size: 11px;
+                white-space: normal;
+                max-height: 32px;
+                overflow: hidden;
+            }
+            .unit-info .unit-nav .nav-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            .slider-arrow {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+                opacity: 0.5;
+                pointer-events: auto;
+            }
+            .slider-arrow.left {
+                left: 4px;
+            }
+            .slider-arrow.right {
+                right: 4px;
+            }
+            .slider-dots {
+                bottom: 8px;
+                padding: 4px 8px;
+                gap: 5px;
+            }
+            .slider-dots .dot {
+                width: 6px;
+                height: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <button class="faction-btn active" data-faction="盟军">
+                <span class="icon">☭</span>
+                <span class="label">盟军</span>
+            </button>
+            <button class="faction-btn" data-faction="帝国">
+                <span class="icon">✙</span>
+                <span class="label">帝国</span>
+            </button>
+        </aside>
+
+        <main class="main">
+            <nav class="gift-nav" id="giftNav">
+                <span style="color:#4a5a6e;font-size:13px;flex:1;text-align:center;">加载数据...</span>
+            </nav>
+
+            <section class="unit-display" id="unitDisplay">
+                <div class="empty-state" id="emptyState">
+                    <div class="big-icon">📭</div>
+                    <div>暂无数据</div>
+                    <div style="font-size:12px;color:#3a4a5a;">请检查 data.js 是否存在</div>
+                </div>
+                <div class="unit-slider hidden" id="unitSlider">
+                    <div class="slider-track" id="sliderTrack"></div>
+                    <button class="slider-arrow left" id="sliderPrev">‹</button>
+                    <button class="slider-arrow right" id="sliderNext">›</button>
+                    <div class="slider-dots" id="sliderDots"></div>
+                </div>
+                <div class="unit-info hidden" id="unitInfo">
+                    <div class="name-area">
+                        <span class="unit-name" id="unitName">—</span>
+                        <span class="unit-index" id="unitIndex">0 / 0</span>
+                    </div>
+                    <div class="unit-desc" id="unitDesc">暂无描述</div>
+                    <div class="unit-nav">
+                        <button class="nav-btn" id="unitPrev">◀</button>
+                        <button class="nav-btn" id="unitNext">▶</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ===== 加载 data.js ===== -->
+    <script src="data.js"></script>
+    <script>
+        (function() {
+            'use strict';
+
+            // 检查数据
+            if (typeof UNIT_DATA === 'undefined') {
+                document.getElementById('giftNav').innerHTML =
+                    `<span style="color:#e66767;font-size:13px;flex:1;text-align:center;">❌ data.js 未找到或格式错误</span>`;
+                document.querySelector('.empty-state .big-icon').textContent = '⚠';
+                document.querySelector('.empty-state div:nth-child(2)').textContent = '数据加载失败';
+                document.querySelector('.empty-state div:nth-child(3)').textContent = '请确保 data.js 存在且定义了 UNIT_DATA';
+                return;
+            }
+
+            const allData = UNIT_DATA;
+            let currentFaction = '盟军';
+            let currentGiftKey = null;
+            let currentGiftData = null;
+            let unitList = [];
+            let unitIndexPos = 0;
+            let imageList = [];
+            let imageIndexPos = 0;
+            let autoTimer = null,
+                imageTimer = null;
+            let isAutoPaused = false,
+                pauseTimeout = null;
+            const UNIT_INTERVAL = 6000,
+                IMAGE_INTERVAL = 3200,
+                PAUSE_RESUME_DELAY = 5000;
+
+            const $ = id => document.getElementById(id);
+            const giftNav = $('giftNav'),
+                sidebar = $('sidebar'),
+                emptyState = $('emptyState'),
+                unitSlider = $('unitSlider'),
+                sliderTrack = $('sliderTrack'),
+                sliderDots = $('sliderDots'),
+                sliderPrev = $('sliderPrev'),
+                sliderNext = $('sliderNext'),
+                unitInfo = $('unitInfo'),
+                unitName = $('unitName'),
+                unitIndex = $('unitIndex'),
+                unitDesc = $('unitDesc'),
+                unitPrev = $('unitPrev'),
+                unitNext = $('unitNext');
+
+            // 获取礼物列表 —— 保持 data.js 中的原始顺序（不排序）
+            function getGifts(faction) {
+                const fd = allData[faction];
+                if (!fd) return [];
+                const result = [];
+                // 按分类顺序遍历：步兵、装甲、远程（维持原定义顺序）
+                for (const cat of ['步兵', '装甲', '远程']) {
+                    const catData = fd[cat];
+                    if (!catData) continue;
+                    for (const [name, info] of Object.entries(catData)) {
+                        if (info.units && info.units.length) {
+                            result.push({ key: name, ...info });
+                        }
+                    }
+                }
+                // 注意：没有 .sort()，保持插入顺序
+                return result;
+            }
+
+            function getUnitImages(unit, faction) {
+                if (unit.images && unit.images.length) return unit.images.map(n => faction + '/' + n);
+                if (unit.thumbnail && unit.thumbnail.length) return unit.thumbnail.map(n => faction + '/' + n);
+                return [];
+            }
+
+            function renderGiftNav(faction) {
+                const gifts = getGifts(faction);
+                if (!gifts.length) {
+                    giftNav.innerHTML =
+                        `<span style="color:#4a5a6e;font-size:13px;flex:1;text-align:center;">该阵营暂无礼物</span>`;
+                    return;
+                }
+                let idx = gifts.findIndex(g => g.key === currentGiftKey);
+                if (idx === -1) idx = 0;
+                currentGiftKey = gifts[idx].key;
+                currentGiftData = gifts[idx];
+
+                const prev = gifts[idx - 1] || null,
+                    next = gifts[idx + 1] || null;
+                const html = `
+                    <button class="gift-btn ${prev ? '' : 'invisible'}" data-gift="${prev ? prev.key : ''}" ${prev ? '' : 'disabled'}>${prev ? prev.key : ''}</button>
+                    <button class="gift-btn active" data-gift="${gifts[idx].key}">${gifts[idx].key}</button>
+                    <button class="gift-btn ${next ? '' : 'invisible'}" data-gift="${next ? next.key : ''}" ${next ? '' : 'disabled'}>${next ? next.key : ''}</button>
+                `;
+                giftNav.innerHTML = html;
+
+                giftNav.querySelectorAll('.gift-btn:not([disabled])').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const key = this.dataset.gift;
+                        if (key && key !== currentGiftKey) {
+                            const gd = gifts.find(g => g.key === key);
+                            if (gd) {
+                                currentGiftKey = key;
+                                currentGiftData = gd;
+                                renderGiftNav(faction);
+                                renderUnitDisplay(faction, gd);
+                                pauseAuto('gift');
+                            }
+                        }
+                    });
+                });
+
+                if (currentGiftData) renderUnitDisplay(faction, currentGiftData);
+                else {
+                    const first = gifts[0];
+                    currentGiftKey = first.key;
+                    currentGiftData = first;
+                    renderGiftNav(faction);
+                }
+            }
+
+            function renderUnitDisplay(faction, giftData) {
+                const units = giftData?.units || [];
+                unitList = units;
+                unitIndexPos = 0;
+                if (!unitList.length) {
+                    emptyState.classList.remove('hidden');
+                    unitSlider.classList.add('hidden');
+                    unitInfo.classList.add('hidden');
+                    return;
+                }
+                emptyState.classList.add('hidden');
+                unitSlider.classList.remove('hidden');
+                unitInfo.classList.remove('hidden');
+                showUnit(0, faction);
+                startAutoPlay();
+            }
+
+            function showUnit(index, faction) {
+                if (!unitList.length) return;
+                const idx = Math.max(0, Math.min(index, unitList.length - 1));
+                unitIndexPos = idx;
+                const unit = unitList[idx];
+                unitName.textContent = unit.name || '未命名';
+                unitIndex.textContent = `${idx + 1} / ${unitList.length}`;
+                unitDesc.textContent = unit.description || '暂无描述';
+                unitPrev.classList.toggle('disabled', idx === 0);
+                unitNext.classList.toggle('disabled', idx === unitList.length - 1);
+
+                const images = getUnitImages(unit, faction);
+                imageList = images;
+                imageIndexPos = 0;
+                if (!imageList.length) {
+                    sliderTrack.innerHTML =
+                        `<div class="slide"><div class="fallback-text">📷 无图</div></div>`;
+                    sliderDots.innerHTML = '';
+                    sliderPrev.classList.add('hidden');
+                    sliderNext.classList.add('hidden');
+                    return;
+                }
+                let slides = '';
+                for (const src of imageList) {
+                    const fallback = (unit.name && unit.name.length) ? unit.name.charAt(0) : '?';
+                    slides += `
+                        <div class="slide">
+                            <img src="${src}" alt="${unit.name}" loading="lazy" 
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                            <div class="fallback-text" style="display:none;">${fallback}</div>
+                        </div>
+                    `;
+                }
+                sliderTrack.innerHTML = slides;
+                updateSliderPosition(0);
+                let dots = '';
+                for (let i = 0; i < imageList.length; i++) {
+                    dots += `<button class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></button>`;
+                }
+                sliderDots.innerHTML = dots;
+                sliderDots.querySelectorAll('.dot').forEach(d => {
+                    d.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.index, 10);
+                        if (!isNaN(idx) && idx !== imageIndexPos) { goToImage(idx);
+                            pauseAuto('dot'); }
+                    });
+                });
+                const multi = imageList.length > 1;
+                sliderPrev.classList.toggle('hidden', !multi);
+                sliderNext.classList.toggle('hidden', !multi);
+                resetImageTimer();
+            }
+
+            function updateSliderPosition(index) {
+                const total = imageList.length;
+                if (!total) return;
+                const idx = ((index % total) + total) % total;
+                imageIndexPos = idx;
+                sliderTrack.style.transform = `translateX(${-idx * 100}%)`;
+                sliderDots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+            }
+
+            function goToImage(index) { if (imageList.length) { updateSliderPosition(index);
+                    pauseAuto('image'); } }
+
+            function nextImage() { if (imageList.length) goToImage(imageIndexPos + 1); }
+
+            function prevImage() { if (imageList.length) goToImage(imageIndexPos - 1); }
+
+            function nextUnit() { if (unitList.length) { const n = (unitIndexPos + 1) % unitList.length;
+                    showUnit(n, currentFaction);
+                    pauseAuto('unit'); } }
+
+            function prevUnit() { if (unitList.length) { const n = (unitIndexPos - 1 + unitList.length) % unitList.length;
+                    showUnit(n, currentFaction);
+                    pauseAuto('unit'); } }
+
+            function startAutoPlay() {
+                stopAutoPlay();
+                isAutoPaused = false;
+                autoTimer = setInterval(() => { if (!isAutoPaused && unitList.length > 1) nextUnit(); }, UNIT_INTERVAL);
+                imageTimer = setInterval(() => { if (!isAutoPaused && imageList.length > 1) nextImage(); },
+                    IMAGE_INTERVAL);
+            }
+
+            function stopAutoPlay() {
+                if (autoTimer) { clearInterval(autoTimer);
+                    autoTimer = null; }
+                if (imageTimer) { clearInterval(imageTimer);
+                    imageTimer = null; }
+                if (pauseTimeout) { clearTimeout(pauseTimeout);
+                    pauseTimeout = null; }
+                isAutoPaused = false;
+            }
+
+            function pauseAuto() {
+                if (!isAutoPaused) isAutoPaused = true;
+                if (pauseTimeout) clearTimeout(pauseTimeout);
+                pauseTimeout = setTimeout(() => { isAutoPaused = false;
+                    pauseTimeout = null; if (!autoTimer || !imageTimer) startAutoPlay(); }, PAUSE_RESUME_DELAY);
+            }
+
+            function resetImageTimer() {
+                if (imageTimer) { clearInterval(imageTimer);
+                    imageTimer = null; }
+                if (!isAutoPaused && imageList.length > 1) {
+                    imageTimer = setInterval(() => { if (!isAutoPaused && imageList.length > 1) nextImage(); },
+                        IMAGE_INTERVAL);
+                }
+            }
+
+            function switchFaction(faction) {
+                if (faction === currentFaction) return;
+                currentFaction = faction;
+                sidebar.querySelectorAll('.faction-btn').forEach(b => b.classList.toggle('active', b.dataset.faction ===
+                    faction));
+                stopAutoPlay();
+                currentGiftKey = null;
+                currentGiftData = null;
+                renderGiftNav(faction);
+            }
+
+            // 事件绑定（无键盘）
+            sidebar.querySelectorAll('.faction-btn').forEach(btn => {
+                btn.addEventListener('click', function() { switchFaction(this.dataset.faction); });
+            });
+            sliderPrev.addEventListener('click', prevImage);
+            sliderNext.addEventListener('click', nextImage);
+            unitPrev.addEventListener('click', prevUnit);
+            unitNext.addEventListener('click', nextUnit);
+
+            // 启动
+            renderGiftNav(currentFaction);
+        })();
+    </script>
+</body>
+</html>
